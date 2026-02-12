@@ -138,7 +138,10 @@
 
             // State untuk AI Modal & API Key
             const [aiTab, setAiTab] = React.useState('reply'); // 'reply' (Template) or 'consult' (Real Chat)
-            const [userApiKey, setUserApiKey] = React.useState('');
+            
+            // --- API KEY PRE-FILLED ---
+            const [userApiKey, setUserApiKey] = React.useState('AIzaSyBGuzz9qV-2o11rQi4hgVctx9-wpQuA7dk');
+            
             const [chatInput, setChatInput] = React.useState('');
             const [isAiLoading, setIsAiLoading] = React.useState(false);
             const [aiChatResponse, setAiChatResponse] = React.useState('');
@@ -191,8 +194,9 @@
 
             const callGeminiChat = async () => {
                 if (!chatInput.trim()) return;
+                // Validasi sederhana, meski sudah di-hardcode
                 if (!userApiKey) {
-                    alert("Masukkan API Key Gemini dulu ya! (Gratis di aistudio.google.com)");
+                    alert("API Key belum terisi.");
                     return;
                 }
 
@@ -925,5 +929,4 @@
         root.render(<QuotationApp />);
     </script>
 </body>
-
 </html>
