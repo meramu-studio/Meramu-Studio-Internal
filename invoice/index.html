@@ -405,7 +405,7 @@
             React.useEffect(() => {
                 const newNumber = generateDocNumber(docType, quotationData.clientName, quotationData.date, monthlyCounters);
                 setQuotationData(prev => ({ ...prev, number: newNumber }));
-            }, [docType, quotationData.clientName, quotationData.date, monthlyCounters]);
+            }, [docType]); // Hapus dependensi clientName dan date agar editan manual tidak tertimpa
 
 
             // Kalkulasi
@@ -789,64 +789,6 @@
                     </div>
                 )}
 
-                {/* MODAL RIWAYAT */}
-                {showHistory && (
-                    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 no-print">
-                        <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
-                            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-[#FAF9F6] rounded-t-xl">
-                                <h2 className="text-lg font-bold text-meramu-dark flex items-center gap-2">
-                                    <History size={20} /> {t.historyBtn}
-                                </h2>
-                                <button onClick={() => setShowHistory(false)} className="text-gray-400 hover:text-gray-600">
-                                    <X size={20} />
-                                </button>
-                            </div>
-                            
-                            <div className="overflow-y-auto p-4 custom-scrollbar flex-1 bg-[#FEFCF8]">
-                                {savedHistory.length === 0 ? (
-                                    <div className="text-center py-10 text-gray-400">
-                                        <p>Belum ada riwayat tersimpan.</p>
-                                        <p className="text-xs mt-1">Klik tombol "Simpan" untuk menyimpan dokumen.</p>
-                                    </div>
-                                ) : (
-                                    <div className="space-y-3">
-                                        {savedHistory.map((item) => (
-                                            <div 
-                                                key={item.id}
-                                                onClick={() => handleLoadFromHistory(item)}
-                                                className="group border border-[#E6E8E0] bg-white p-4 rounded-lg hover:border-meramu-green hover:shadow-sm cursor-pointer transition-all flex justify-between items-center"
-                                            >
-                                                <div>
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded ${
-                                                            item.docType === 'quotation' ? 'bg-blue-100 text-blue-700' :
-                                                            item.docType === 'invoice_dp' ? 'bg-orange-100 text-orange-700' :
-                                                            'bg-green-100 text-green-700'
-                                                        }`}>
-                                                            {/* We use translations for history display too, but be careful as types are saved strings. */}
-                                                            {item.docType === 'quotation' ? 'Quotation' : item.docType === 'invoice_dp' ? 'Invoice DP' : 'Invoice Final'}
-                                                        </span>
-                                                        <span className="text-xs text-gray-400">{item.saveDate}</span>
-                                                    </div>
-                                                    <h3 className="font-bold text-meramu-dark">{item.quotationData.clientName}</h3>
-                                                    <p className="text-xs text-[#6B786D]">{item.quotationData.number} • {formatCurrency(item.grandTotal)}</p>
-                                                </div>
-                                                <button 
-                                                    onClick={(e) => handleDeleteHistory(item.id, e)}
-                                                    className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
-                                                    title="Hapus dari riwayat"
-                                                >
-                                                    <Trash2 size={18} />
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                )}
-
                 {/* Kertas Quotation */}
                 <div id="quotation-paper" className="max-w-4xl mx-auto bg-white shadow-xl rounded-none md:rounded-lg overflow-hidden print:shadow-none print:w-full print:max-w-full print:bg-white">
                     
@@ -902,9 +844,10 @@
                             <input 
                             type="text" 
                             value={quotationData.number}
-                            readOnly
-                            className="text-right font-bold text-meramu-dark w-full bg-transparent focus:outline-none"
-                            title="Nomor dokumen dibuat otomatis"
+                            onChange={(e) => setQuotationData({...quotationData, number: e.target.value})}
+                            className="text-right font-bold text-meramu-dark w-full bg-transparent focus:outline-none border-b border-transparent hover:border-[#D1D8C6] focus:border-meramu-green transition-colors"
+                            placeholder="Nomor Dokumen"
+                            title="Nomor dokumen (Dapat diubah)"
                             />
                         </div>
                         <div className="flex justify-between items-center border-b border-[#EFECE5] pb-2">
