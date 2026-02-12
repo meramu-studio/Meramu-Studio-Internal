@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meramu Design - Rate Card 2026</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        meramu: {
+                            green: '#569674',
+                            cream: '#fef5da',
+                            dark: '#121B16',
+                            glass: 'rgba(255, 255, 255, 0.03)',
+                            border: 'rgba(255, 255, 255, 0.08)'
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 1s ease-out forwards',
+                        'slide-up': 'slideUp 0.8s ease-out forwards',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body { scroll-behavior: smooth; letter-spacing: -0.01em; }
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.02); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transform-style: preserve-3d;
+        }
+        .glass-bar {
+            background: rgba(18, 27, 22, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .card-3d { transition: transform 0.1s ease-out; will-change: transform; }
+        
+        /* Custom Scrollbar for Sidebar List */
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-meramu-dark text-meramu-cream/90 font-sans antialiased relative overflow-x-hidden">
+    <!-- Background Decor -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-meramu-green/10 rounded-full blur-[120px] animate-pulse-slow"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-meramu-cream/5 rounded-full blur-[120px] animate-pulse-slow" style="animation-delay: 2s"></div>
+    </div>
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const content = {
+            id: {
+                hero: { title1: "Crafting a", accent: "Magical Shift", title2: "for Your Brand🪄" },
+                tabs: { branding: "Brand Identity", printed: "Printed Media", social: "Social Media", digital: "Digital & UI/UX" },
+                msmeBtn: "Special Rate UMKM",
+                sidebar: { title: "Daftar Pesanan", empty: "Pilih paket untuk memulai kalkulasi", addons: "Tambahan Khusus", total: "Total Estimasi", cta: "Konsultasi via WA" },
+                modal: { title: "Special Rate UMKM", desc: "Lengkapi data untuk mendapatkan penawaran eksklusif bisnis lokal.", back: "Kembali ke Beranda" },
+                tc: { title: "Syarat & Ketentuan", flow: "Alur Projek" },
+                mobileBar: { total: "Estimasi", cta: "Order" }
+            },
+            en: {
+                hero: { title1: "Crafting a", accent: "Magical Shift", title2: "for Your Brand🪄" },
+                tabs: { branding: "Brand Identity", printed: "Printed Media", social: "Social Media", digital: "Digital & UI/UX" },
+                msmeBtn: "MSME Special Rate",
+                sidebar: { title: "Selected Services", empty: "Select packages to start calculating", addons: "Special Add-ons", total: "Total Estimate", cta: "Consult via WA" },
+                modal: { title: "MSME Special Rate", desc: "Complete the data to receive exclusive offers for local businesses.", back: "Back to Home" },
+                tc: { title: "Terms & Conditions", flow: "Project Flow" },
+                mobileBar: { total: "Estimate", cta: "Order" }
+            }
+        };
+
+        const packagesData = {
+            branding: {
+                title: { id: 'Brand Identity', en: 'Brand Identity' },
+                timeline: { id: '7-21 Hari Kerja', en: '7-21 Business Days' },
+                sections: [
+                    {
+                        subTitle: { id: 'Logo Development', en: 'Logo Development' },
+                        items: [
+                            { id: 'b1', name: 'Basic Logo', price: {id: 3000000, en: 450}, features: { id: ['2 Alternatif Logo', '5-7 Hari kerja', '3x Revisi', 'File Master (AI, EPS, PNG)'], en: ['2 Logo alternatives', '5-7 Business days', '3x Revision', 'Master Files (AI, EPS, PNG)'] } },
+                            { id: 'b2', name: 'Pro Branding', price: {id: 5000000, en: 1500}, tag: 'Best Value', features: { id: ['3 Alternatif Logo', 'Stationery Design', 'Social Media Template', 'Brand Guidelines Book'], en: ['3 Logo alternatives', 'Stationery Design', 'Social Media Assets', 'Brand Guidelines Book'] } }
+                        ]
+                    },
+                    {
+                        subTitle: { id: 'Packaging Design', en: 'Packaging Design' },
+                        items: [
+                            { id: 'p1', name: 'Label Design', price: {id: 1500000, en: 250}, features: { id: ['Desain Label (Stiker/Kaleng)', '3D Mockup Visual', 'Siap Cetak (Die-cut)', '3x Revisi'], en: ['Label Design (Sticker/Can)', '3D Visual Mockup', 'Print Ready (Die-cut)', '3x Revision'] } },
+                            { id: 'p2', name: 'Box & Pouch', price: {id: 2800000, en: 450}, features: { id: ['Desain Kemasan Luar', 'Pola Potong (Dieline)', '3D Mockup Premium', 'Visualisasi Rak'], en: ['Outer Box/Pouch Design', 'Custom Dielines', 'Premium 3D Mockup', 'Shelf Visualization'] } },
+                            { id: 'p3', name: 'Unboxing Exp', price: {id: 4500000, en: 800}, features: { id: ['Box + Label + Thank You Card', 'Tissue Paper Pattern', 'Instruction Manual', 'Full 3D Render'], en: ['Box + Label + Inserts', 'Tissue Pattern Design', 'Instruction Manual', 'Full 3D Rendering'] } }
+                        ]
+                    },
+                    {
+                        subTitle: { id: 'Mascot & Illustration', en: 'Mascot & Illustration' },
+                        items: [
+                            { id: 'm1', name: 'Single Mascot', price: {id: 1800000, en: 300}, features: { id: ['1 Desain Karakter', '1 Pose Utama', 'Full Color & Shading', 'Komersial Use'], en: ['1 Character Design', '1 Main Pose', 'Full Color & Shading', 'Commercial License'] } },
+                            { id: 'm2', name: 'Mascot Pack', price: {id: 3500000, en: 600}, features: { id: ['1 Desain Karakter', '3 Pose Aksi (Gesture)', 'Ekspresi Wajah', 'Vector Source File'], en: ['1 Character Design', '3 Action Poses', 'Facial Expressions', 'Vector Source File'] } },
+                            { id: 'm3', name: 'Character Sheet', price: {id: 5500000, en: 1000}, features: { id: ['Tampak Depan/Samping/Belakang', '5 Pose Aksi', 'Turunan Icon', 'Panduan Penggunaan'], en: ['Turnaround View (F/S/B)', '5 Action Poses', 'Icon Derivations', 'Usage Guidelines'] } }
+                        ]
+                    }
+                ]
+            },
+            digital: {
+                title: { id: 'Digital & UI/UX', en: 'Digital & UI/UX' },
+                timeline: { id: '10-21 Hari Kerja', en: '10-21 Business Days' },
+                items: [
+                    { id: 'u1', name: 'Landing Page', price: {id: 2500000, en: 800}, features: { id: ['Hingga 5 Section', 'Responsive Design', 'UI Kit', 'High-fidelity Prototype'], en: ['Up to 5 Custom Sections', 'Fully Responsive Design', 'Figma UI Kit', 'Interactive Prototype'] } },
+                    { id: 'u2', name: 'Business Website', price: {id: 5500000, en: 2500}, features: { id: ['Hingga 10 Halaman', 'Integrasi CMS', 'SEO Basic', 'Setup Domain/Hosting'], en: ['Multi-page Website', 'CMS Integration', 'Basic SEO Setup', 'Hosting Management'] } },
+                    { id: 'u3', name: 'Mobile App Design', price: {id: 7000000, en: 3500}, features: { id: ['Hingga 15 Screens', 'User Flow Design', 'Asset Export', 'Developer Handover'], en: ['UX Research & Flows', 'Up to 15 Premium Screens', 'Design System', 'Dev Handover'] } }
+                ]
+            },
+            printed: {
+                title: { id: 'Printed Media', en: 'Printed Media' },
+                timeline: { id: '10-14 Hari Kerja', en: '10-14 Business Days' },
+                items: [
+                    { id: 'a1', name: 'Company Profile', price: {id: 2500000, en: 600}, features: { id: ['Hingga 16 Halaman', 'Digital PDF', 'Siap Cetak'], en: ['Up to 16 Pages', 'Digital PDF Copy', 'Print-ready Files'] } },
+                    { id: 'a2', name: 'Annual Report', price: {id: 100000, en: 45}, isPerUnit: true, unitName: {id: 'Hal', en: 'Page'}, features: { id: ['Layout Profesional', 'Visualisasi Data', 'Gaya Minimalis', 'Siap Cetak'], en: ['Data Visualization', 'Professional Layout', 'Creative Infographics', 'Print Ready'] } }
+                ]
+            },
+            social: {
+                title: { id: 'Social Media', en: 'Social Media' },
+                timeline: { id: 'Bulanan', en: 'Monthly' },
+                items: [
+                    { id: 's1', name: 'Growth Package', price: {id: 2500000, en: 500}, features: { id: ['12 Post / Bulan', '2 Reels / Bulan', 'Copywriting', 'Laporan Bulanan'], en: ['12 Creative Posts', '2 High-quality Reels', 'Copywriting', 'Monthly Insights'] } },
+                    { id: 's2', name: 'Business Suite', price: {id: 4500000, en: 950}, features: { id: ['24 Post / Bulan', '4 Reels / Bulan', 'Admin Posting', 'Analitik Lengkap'], en: ['24 Creative Posts', '4 Cinematic Reels', 'Caption & Scheduling', 'Full Performance Audit'] } }
+                ]
+            }
+        };
+
+        const addOnsList = [
+            // Rate berbeda signifikan antara ID (Local) dan EN (Inter) sesuai request
+            { id: 'stk', name: { id: 'Sticker Set', en: 'Sticker Set' }, price: {id: 450000, en: 150} },
+            { id: 'rsh', name: { id: 'Pesanan Kilat (Rush)', en: 'Rush Order (48h)' }, price: {id: 1000000, en: 300} },
+            { id: 'rev', name: { id: 'Unlimited Revision', en: 'Unlimited Revision' }, price: {id: 1500000, en: 400} },
+        ];
+
+        const RateCardApp = () => {
+            const [lang, setLang] = useState('id');
+            const [activeTab, setActiveTab] = useState('branding');
+            
+            // Multi-select Logic: Cart stores objects { ...pkg, quantity: 1 }
+            const [cart, setCart] = useState([]);
+            const [selectedAddOns, setSelectedAddOns] = useState([]);
+            
+            const [isUmkmModal, setIsUmkmModal] = useState(false);
+            const [showBackToTop, setShowBackToTop] = useState(false);
+
+            const t = content[lang];
+
+            useEffect(() => {
+                const handleScroll = () => {
+                    if (window.scrollY > 300) setShowBackToTop(true);
+                    else setShowBackToTop(false);
+                };
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            // Toggle logic for Packages
+            const togglePackage = (pkg) => {
+                setCart(prev => {
+                    const exists = prev.find(item => item.id === pkg.id);
+                    if (exists) {
+                        return prev.filter(item => item.id !== pkg.id); // Remove
+                    } else {
+                        // Add with default qty 1 (or 10 for pages/units if preferred, but 1 is safer)
+                        return [...prev, { ...pkg, quantity: 1 }]; 
+                    }
+                });
+            };
+
+            // Update quantity for per-unit items
+            const updateItemQty = (id, delta) => {
+                setCart(prev => prev.map(item => {
+                    if (item.id === id) {
+                        return { ...item, quantity: Math.max(1, item.quantity + delta) };
+                    }
+                    return item;
+                }));
+            };
+
+            const toggleAddOn = (id) => {
+                setSelectedAddOns(prev => prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id]);
+            };
+
+            const formatCurrency = (val) => {
+                if (lang === 'id') {
+                    return `Rp ${(val / 1000).toLocaleString()}k`;
+                } else {
+                    return `$${val.toLocaleString()}`;
+                }
+            };
+
+            const calculateTotal = () => {
+                const itemsTotal = cart.reduce((sum, item) => {
+                    const price = item.price[lang];
+                    const qty = item.isPerUnit ? item.quantity : 1;
+                    return sum + (price * qty);
+                }, 0);
+                
+                const addonsTotal = selectedAddOns.reduce((acc, id) => {
+                    const item = addOnsList.find(a => a.id === id);
+                    return acc + (item?.price[lang] || 0);
+                }, 0);
+
+                return itemsTotal + addonsTotal;
+            };
+
+            const handleOrder = () => {
+                const itemsList = cart.map(item => {
+                    const qty = item.isPerUnit ? ` (${item.quantity} ${item.unitName[lang]})` : '';
+                    return `- ${item.name}${qty}`;
+                }).join('\n');
+
+                const addOnNames = selectedAddOns.map(id => addOnsList.find(a => a.id === id).name[lang]).join(', ');
+                const totalInvest = formatCurrency(calculateTotal());
+                
+                const intro = lang === 'id' ? 'Halo Meramu! Saya tertarik dengan paket:' : 'Hi Meramu! I am interested in:';
+                const addonsText = addOnNames ? `\nAdd-ons: ${addOnNames}` : '';
+                const totalText = lang === 'id' ? 'Total Estimasi' : 'Total Estimate';
+                
+                const text = `${intro}\n${itemsList}${addonsText}\n\n${totalText}: ${totalInvest}`;
+                window.open(`https://wa.me/6285161230219?text=${encodeURIComponent(text)}`, '_blank');
+            };
+
+            return (
+                <div className="min-h-screen selection:bg-meramu-green selection:text-white pb-32 lg:pb-20">
+                    {/* Header */}
+                    <nav className="fixed top-0 w-full z-50 px-6 md:px-8 py-6 flex justify-between items-center border-b border-white/5 bg-meramu-dark/90 backdrop-blur-md transition-all duration-300">
+                        <span className="text-xl font-semibold tracking-tighter cursor-pointer" onClick={() => window.scrollTo(0,0)}>MERAMU<span className="text-meramu-green">.</span></span>
+                        <div className="flex items-center gap-4 md:gap-8">
+                            <button 
+                                onClick={() => setLang(lang === 'id' ? 'en' : 'id')}
+                                className="text-[10px] font-bold bg-white/5 px-3 py-1 rounded-md border border-white/10 hover:bg-meramu-green transition-colors"
+                            >
+                                {lang === 'id' ? 'ID' : 'EN'}
+                            </button>
+                            <a href="https://instagram.com/meramu.studio" target="_blank" className="text-[10px] uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity hidden md:block">Instagram</a>
+                            <button 
+                                onClick={() => window.open('https://wa.me/6285161230219?text=Hi%20Meramu%20Studio!%20I%20want%20to%20start%20a%20new%20project.', '_blank')}
+                                className="text-[10px] uppercase tracking-widest px-6 py-2 border border-white/10 rounded-full hover:bg-meramu-cream hover:text-meramu-dark transition-all hidden md:block"
+                            >
+                                {lang === 'id' ? 'Bangun Projek' : 'Build Project'}
+                            </button>
+                        </div>
+                    </nav>
+
+                    {/* Hero */}
+                    <header className="pt-32 md:pt-40 pb-12 px-8 max-w-5xl mx-auto text-center">
+                        <h1 className="text-4xl md:text-6xl font-light tracking-tight mb-4 animate-fade-in leading-[1.1]">
+                            {t.hero.title1} <span className="text-meramu-green italic font-serif">{t.hero.accent}</span> <br/>{t.hero.title2}
+                        </h1>
+                    </header>
+
+                    {/* Navigation */}
+                    <div className="max-w-6xl mx-auto px-4 md:px-8 mb-16 animate-fade-in">
+                        <div className="flex flex-nowrap md:flex-wrap overflow-x-auto pb-4 md:pb-0 gap-3 no-scrollbar justify-start md:justify-center">
+                            {Object.keys(packagesData).map(key => (
+                                <button 
+                                    key={key} 
+                                    onClick={() => setActiveTab(key)}
+                                    className={`flex-shrink-0 px-6 py-3 rounded-2xl text-[10px] uppercase tracking-widest transition-all border ${activeTab === key ? 'bg-meramu-cream text-meramu-dark border-transparent font-bold shadow-[0_0_20px_rgba(254,245,218,0.3)]' : 'glass-card text-white/40 border-white/5 hover:border-white/20'}`}
+                                >
+                                    {t.tabs[key]}
+                                </button>
+                            ))}
+                        </div>
+                        <div className="mt-4 flex justify-center">
+                            <button 
+                                onClick={() => setIsUmkmModal(true)}
+                                className="px-10 py-3 rounded-2xl text-[9px] uppercase tracking-widest border border-meramu-green/30 text-meramu-green hover:bg-meramu-green/10 transition-all font-medium"
+                            >
+                                {t.msmeBtn}
+                            </button>
+                        </div>
+                    </div>
+
+                    <main className="max-w-7xl mx-auto px-6 md:px-8 grid grid-cols-1 lg:grid-cols-12 gap-16">
+                        <div className="lg:col-span-8 animate-slide-up">
+                            <div className="flex justify-between items-end mb-8 border-b border-white/5 pb-4">
+                                <h2 className="text-sm font-light uppercase tracking-[0.3em] text-meramu-green">{packagesData[activeTab].title[lang]}</h2>
+                                <span className="text-[10px] opacity-30 italic">Est. {packagesData[activeTab].timeline[lang]}</span>
+                            </div>
+
+                            <div className="space-y-16">
+                                {packagesData[activeTab].sections ? (
+                                    packagesData[activeTab].sections.map((section, idx) => (
+                                        <div key={idx} className="space-y-6">
+                                            <div className="flex items-center gap-4">
+                                                <h3 className="text-xl md:text-2xl font-serif text-meramu-cream/90">{section.subTitle[lang]}</h3>
+                                                <div className="h-px bg-white/10 flex-grow"></div>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                {section.items.map(pkg => (
+                                                    <PackageCard 
+                                                        key={pkg.id} 
+                                                        pkg={pkg} 
+                                                        cart={cart}
+                                                        togglePackage={togglePackage}
+                                                        lang={lang} 
+                                                        formatCurrency={formatCurrency} 
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {packagesData[activeTab].items.map(pkg => (
+                                            <PackageCard 
+                                                key={pkg.id} 
+                                                pkg={pkg} 
+                                                cart={cart}
+                                                togglePackage={togglePackage}
+                                                lang={lang} 
+                                                formatCurrency={formatCurrency} 
+                                            />
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="mt-20 grid grid-cols-1 md:grid-cols-2 gap-12 pt-12 border-t border-white/5">
+                                <div>
+                                    <h4 className="text-[10px] font-semibold uppercase tracking-widest text-meramu-green mb-6">{t.tc.title}</h4>
+                                    <ul className="text-[10px] space-y-4 opacity-40 font-light leading-relaxed">
+                                        <li>• {lang === 'id' ? 'DP 50% di awal sebagai tanda jadi.' : '50% Down Payment to start.'}</li>
+                                        <li>• {lang === 'id' ? 'Pelunasan sebelum penyerahan file final.' : 'Final payment before file delivery.'}</li>
+                                        <li>• {lang === 'id' ? 'Hak cipta penuh milik klien setelah pelunasan.' : 'Full copyright ownership after final payment.'}</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 className="text-[10px] font-semibold uppercase tracking-widest text-meramu-green mb-6">{t.tc.flow}</h4>
+                                    <div className="space-y-4 text-[10px] opacity-40 font-light">
+                                        <p>1. Briefing & Moodboard Analysis</p>
+                                        <p>2. Concept & Visual Development</p>
+                                        <p>3. Review & Feedback</p>
+                                        <p>4. Finalizing & Delivery</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Sidebar Desktop */}
+                        <aside className="hidden lg:block lg:col-span-4 lg:sticky lg:top-32 h-fit">
+                            <div className="p-8 rounded-[2.5rem] bg-meramu-cream text-meramu-dark shadow-2xl relative overflow-hidden group min-h-[400px] flex flex-col">
+                                <div className="absolute top-0 right-0 w-40 h-40 bg-white/30 rounded-full blur-3xl group-hover:bg-meramu-green/20 transition-all duration-700 pointer-events-none"></div>
+                                <h3 className="text-[10px] font-bold uppercase tracking-widest mb-6 text-meramu-green flex items-center justify-between">
+                                    {t.sidebar.title}
+                                    <span className="bg-meramu-dark text-white w-5 h-5 rounded-full flex items-center justify-center text-[9px]">{cart.length}</span>
+                                </h3>
+                                
+                                {/* Cart Items List */}
+                                <div className="flex-grow space-y-3 mb-8 custom-scroll overflow-y-auto max-h-[300px] pr-2">
+                                    {cart.length === 0 ? (
+                                        <div className="text-center py-10 opacity-30 text-xs italic border-2 border-dashed border-black/10 rounded-xl">
+                                            {t.sidebar.empty}
+                                        </div>
+                                    ) : (
+                                        cart.map(item => (
+                                            <div key={item.id} className="bg-white/50 p-4 rounded-xl border border-black/5 animate-fade-in">
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <span className="text-[10px] font-bold uppercase tracking-wide w-2/3 leading-tight">{item.name}</span>
+                                                    <span className="text-[10px] font-medium opacity-60">
+                                                        {formatCurrency(item.price[lang] * (item.isPerUnit ? item.quantity : 1))}
+                                                    </span>
+                                                </div>
+                                                
+                                                {item.isPerUnit && (
+                                                    <div className="flex items-center gap-3 mt-2 bg-meramu-dark/5 rounded-lg p-1 w-fit">
+                                                        <button onClick={(e) => {e.stopPropagation(); updateItemQty(item.id, -1)}} className="w-5 h-5 flex items-center justify-center hover:bg-white rounded text-xs">-</button>
+                                                        <span className="text-[9px] font-bold w-4 text-center">{item.quantity}</span>
+                                                        <button onClick={(e) => {e.stopPropagation(); updateItemQty(item.id, 1)}} className="w-5 h-5 flex items-center justify-center hover:bg-white rounded text-xs">+</button>
+                                                        <span className="text-[8px] opacity-40 uppercase ml-1">{item.unitName[lang]}</span>
+                                                    </div>
+                                                )}
+                                                {!item.isPerUnit && <div className="text-[8px] opacity-40">Single Package</div>}
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+
+                                <div className="space-y-3 mb-8 border-t border-black/10 pt-6">
+                                    <p className="text-[9px] uppercase tracking-widest opacity-50 mb-2 font-semibold">{t.sidebar.addons}</p>
+                                    {addOnsList.map(item => (
+                                        <div 
+                                            key={item.id} 
+                                            onClick={() => toggleAddOn(item.id)}
+                                            className={`p-4 rounded-xl border cursor-pointer transition-all flex justify-between items-center ${selectedAddOns.includes(item.id) ? 'bg-meramu-green text-white border-transparent shadow-lg' : 'bg-white/40 border-black/5 hover:bg-white/60'}`}
+                                        >
+                                            <span className="text-[9px] font-bold">{item.name[lang]}</span>
+                                            <span className="text-[9px] opacity-70 font-medium">+{formatCurrency(item.price[lang])}</span>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="pt-6 border-t border-black/10 mt-auto">
+                                    <div className="flex justify-between items-end mb-6">
+                                        <span className="text-[9px] uppercase tracking-widest opacity-50 font-bold">{t.sidebar.total}</span>
+                                        <span className="text-3xl font-light tracking-tighter text-meramu-dark">{formatCurrency(calculateTotal())}</span>
+                                    </div>
+                                    <button 
+                                        disabled={cart.length === 0}
+                                        onClick={handleOrder}
+                                        className="w-full py-4 rounded-full bg-meramu-dark text-meramu-cream font-bold text-[10px] uppercase tracking-widest hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl"
+                                    >
+                                        {t.sidebar.cta}
+                                    </button>
+                                </div>
+                            </div>
+                        </aside>
+                    </main>
+                    
+                    {/* Mobile Floating Bar */}
+                    <div className="fixed bottom-0 left-0 w-full p-4 lg:hidden z-40">
+                        <div className="glass-bar p-5 rounded-3xl shadow-2xl flex justify-between items-center text-white">
+                            <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <p className="text-[9px] uppercase tracking-widest opacity-60">{t.mobileBar.total}</p>
+                                    <span className="bg-meramu-green text-white text-[8px] px-1.5 py-0.5 rounded-full">{cart.length} items</span>
+                                </div>
+                                <p className="text-2xl font-medium tracking-tight text-meramu-green">{formatCurrency(calculateTotal())}</p>
+                            </div>
+                            <button 
+                                disabled={cart.length === 0}
+                                onClick={handleOrder}
+                                className="px-8 py-3 rounded-xl bg-meramu-cream text-meramu-dark font-bold text-[10px] uppercase tracking-widest disabled:opacity-50"
+                            >
+                                {t.mobileBar.cta}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Back to Top Button */}
+                    <button 
+                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                        className={`fixed bottom-28 lg:bottom-10 right-6 z-40 w-10 h-10 rounded-full bg-meramu-green/20 border border-meramu-green text-meramu-green flex items-center justify-center transition-all duration-500 hover:bg-meramu-green hover:text-white ${showBackToTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                    </button>
+
+                    {/* UMKM Modal */}
+                    {isUmkmModal && (
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-meramu-dark/95 backdrop-blur-xl">
+                            <div className="w-full max-w-lg p-12 rounded-[3rem] border border-white/5 bg-black/40 relative animate-fade-in">
+                                <button onClick={() => setIsUmkmModal(false)} className="absolute top-10 right-10 opacity-20 hover:opacity-100">✕</button>
+                                <h3 className="text-2xl font-light mb-2 tracking-tight">{t.modal.title}</h3>
+                                <p className="text-[10px] opacity-40 mb-10 italic">{t.modal.desc}</p>
+                                
+                                <form className="space-y-4" onSubmit={(e) => {
+                                    e.preventDefault();
+                                    const d = new FormData(e.target);
+                                    const text = `Hai Meramu Studio! Nama saya *${d.get('name')}* dari *${d.get('biz')}* (IG: ${d.get('ig')}). Usaha berdiri tahun ${d.get('year')}. Ingin info rate UMKM.`;
+                                    window.open(`https://wa.me/6285161230219?text=${encodeURIComponent(text)}`, '_blank');
+                                }}>
+                                    <input required name="name" placeholder={lang === 'id' ? "Nama Anda" : "Your Name"} className="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 text-[11px] focus:border-meramu-green/40 outline-none transition-colors" />
+                                    <input required name="biz" placeholder={lang === 'id' ? "Nama Usaha" : "Business Name"} className="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 text-[11px] focus:border-meramu-green/40 outline-none transition-colors" />
+                                    <input required name="ig" placeholder="Username IG Bisnis" className="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 text-[11px] focus:border-meramu-green/40 outline-none transition-colors" />
+                                    <input required name="year" placeholder={lang === 'id' ? "Tahun Berdiri" : "Year Established"} className="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 text-[11px] focus:border-meramu-green/40 outline-none transition-colors" />
+                                    <button className="w-full bg-meramu-green text-white py-4 rounded-2xl text-[10px] uppercase tracking-widest font-bold mt-4 shadow-xl shadow-meramu-green/20 hover:bg-meramu-green/90 transition-all">Claim Special Rate</button>
+                                    <button type="button" onClick={() => setIsUmkmModal(false)} className="w-full bg-transparent text-white/40 py-2 rounded-2xl text-[9px] uppercase tracking-widest hover:text-white transition-colors">{t.modal.back}</button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Footer */}
+                    <footer className="mt-20 py-20 bg-black/20 text-center border-t border-white/5 pb-32 lg:pb-20">
+                        <div className="max-w-md mx-auto px-6">
+                            <h2 className="text-xl font-bold tracking-tighter mb-8 text-meramu-green">MERAMU<span className="text-white">.</span></h2>
+                            <div className="flex justify-center gap-8 mb-12">
+                                <SocialLink icon="wa" href="https://wa.me/6285161230219" label="WhatsApp" />
+                                <SocialLink icon="ig" href="https://instagram.com/meramu.studio" label="Instagram" />
+                                <SocialLink icon="port" href="https://drive.google.com/file/d/17_VrbF6PeIz0dMwbBUtANmF1GFINzGdJ/view?usp=sharing" label="Portfolio" />
+                            </div>
+                            <p className="text-[9px] uppercase tracking-[0.5em] font-light opacity-30">© 2026 MERAMU STUDIO • JAKARTA</p>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        const PackageCard = ({ pkg, cart, togglePackage, lang, formatCurrency }) => {
+            const cardRef = useRef(null);
+            
+            // Check if item is in cart
+            const isSelected = cart.some(item => item.id === pkg.id);
+
+            const handleMouseMove = (e) => {
+                if (!cardRef.current) return;
+                const card = cardRef.current;
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const rotateY = ((x - rect.width / 2) / rect.width) * 10;
+                const rotateX = -((y - rect.height / 2) / rect.height) * 10;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+            };
+
+            const handleMouseLeave = () => {
+                if (cardRef.current) {
+                    if (isSelected) {
+                         cardRef.current.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1.02, 1.02, 1.02)';
+                    } else {
+                         cardRef.current.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+                    }
+                }
+            };
+
+            useEffect(() => {
+                 if (cardRef.current) {
+                    if (isSelected) {
+                         cardRef.current.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1.02, 1.02, 1.02)';
+                    } else {
+                         cardRef.current.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+                    }
+                 }
+            }, [isSelected]);
+
+            return (
+                <div 
+                    ref={cardRef}
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={handleMouseLeave}
+                    onClick={() => togglePackage(pkg)}
+                    className={`p-8 rounded-3xl cursor-pointer card-3d border group relative overflow-hidden ${isSelected ? 'bg-meramu-cream text-meramu-dark border-transparent shadow-[0_0_30px_rgba(254,245,218,0.2)]' : 'glass-card hover:bg-white/5 border-transparent'}`}
+                >
+                    {/* Selection Indicator */}
+                    {isSelected && (
+                        <div className="absolute top-4 right-4 text-meramu-green bg-meramu-dark/10 p-1 rounded-full">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                    )}
+
+                    <div className="flex justify-between items-start mb-6 pr-8">
+                        <h3 className="text-xs uppercase tracking-widest font-semibold">{pkg.name}</h3>
+                        {pkg.tag && <span className={`text-[8px] px-2 py-0.5 rounded-full uppercase ${isSelected ? 'bg-meramu-green text-white' : 'bg-white/10 text-white/60'}`}>{pkg.tag}</span>}
+                    </div>
+                    <div className="text-2xl font-light mb-8">
+                        {formatCurrency(pkg.price[lang])}
+                        {pkg.isPerUnit && <span className="text-[10px] opacity-40 ml-1">/{pkg.unitName[lang]}</span>}
+                    </div>
+                    <ul className="space-y-3">
+                        {pkg.features[lang].map((f, i) => (
+                            <li key={i} className="text-[11px] font-light flex items-start gap-3 opacity-60 italic leading-relaxed group-hover:opacity-100 transition-opacity">
+                                <span className={isSelected ? 'text-meramu-green' : 'text-meramu-green/70'}>•</span> {f}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            );
+        };
+
+        const SocialLink = ({ icon, href, label }) => (
+            <a href={href} target="_blank" className="flex flex-col items-center gap-2 group">
+                <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-meramu-green group-hover:border-transparent transition-all">
+                    {icon === 'wa' && <svg className="w-4 h-4 text-white/50 group-hover:text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.506-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.015-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>}
+                    {icon === 'ig' && <svg className="w-4 h-4 text-white/50 group-hover:text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.266.069 1.645.069 4.849s-.011 3.584-.069 4.849c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.011-4.849-.07c-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849s.012-3.584.07-4.849c.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.337 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.339-.2 6.78-2.618 6.98-6.98.058-1.28.073-1.689.073-4.947s-.015-3.667-.072-4.947c-.2-4.349-2.619-6.78-6.98-6.98-1.28-.059-1.689-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>}
+                    {icon === 'port' && <svg className="w-4 h-4 text-white/50 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>}
+                </div>
+                <span className="text-[9px] uppercase tracking-widest opacity-40 group-hover:opacity-100 transition-opacity">{label}</span>
+            </a>
+        );
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<RateCardApp />);
+    </script>
+</body>
+</html>
