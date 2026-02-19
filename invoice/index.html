@@ -102,7 +102,7 @@
         );
         const Sparkles = ({ size = 24, className = "" }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L12 3Z"/>
+                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
             </svg>
         );
         const Copy = ({ size = 16, className = "" }) => (
@@ -125,12 +125,8 @@
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
         );
-        const Globe = ({ size = 24, className = "" }) => (
-            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-        );
 
         const QuotationApp = () => {
-            const [lang, setLang] = React.useState('id'); // 'id' or 'en'
             const [docType, setDocType] = React.useState('quotation');
             const [showHistory, setShowHistory] = React.useState(false);
             const [showAI, setShowAI] = React.useState(false); 
@@ -142,7 +138,10 @@
 
             // State untuk AI Modal & API Key
             const [aiTab, setAiTab] = React.useState('reply'); // 'reply' (Template) or 'consult' (Real Chat)
-            const [userApiKey, setUserApiKey] = React.useState('');
+            
+            // --- API KEY PRE-FILLED ---
+            const [userApiKey, setUserApiKey] = React.useState('AIzaSyBGuzz9qV-2o11rQi4hgVctx9-wpQuA7dk');
+            
             const [chatInput, setChatInput] = React.useState('');
             const [isAiLoading, setIsAiLoading] = React.useState(false);
             const [aiChatResponse, setAiChatResponse] = React.useState('');
@@ -170,154 +169,6 @@
             const [discountPercent, setDiscountPercent] = React.useState(5);
             const [taxPercent, setTaxPercent] = React.useState(0);
 
-            // KAMUS TERJEMAHAN
-            const translations = {
-                id: {
-                    docTypeLabel: "Jenis Dokumen:",
-                    quotation: "Quotation",
-                    invoiceDp: "Invoice DP",
-                    invoiceFinal: "Pelunasan",
-                    templateBtn: "Template Balasan",
-                    historyBtn: "Riwayat",
-                    saveBtn: "Simpan",
-                    savedBtn: "Tersimpan",
-                    saveJpegBtn: "Simpan JPG",
-                    printBtn: "Cetak",
-                    quotationMain: "QUOTATION",
-                    quotationSub: "Proposal Penawaran",
-                    invoiceDpMain: "INVOICE (DP)",
-                    invoiceDpSub: "Tagihan Uang Muka",
-                    invoiceFinalMain: "INVOICE",
-                    invoiceFinalSub: "Tagihan Pelunasan",
-                    toClient: "Ditujukan Kepada (Client)",
-                    docNumber: "No. Dokumen",
-                    date: "Tanggal",
-                    validUntil: "Berlaku Sampai",
-                    dueDate: "Jatuh Tempo",
-                    scopeHeader: "Lingkup Pekerjaan (Scope)",
-                    qtyHeader: "Qty",
-                    priceHeader: "Harga",
-                    totalHeader: "Total",
-                    addItem: "Tambah Item Baru",
-                    subtotal: "Subtotal",
-                    discount: "Diskon",
-                    tax: "Pajak (PPN)",
-                    totalProject: "Total Project",
-                    total: "Total",
-                    lessDp: "Dikurangi DP (Sudah Dibayar)",
-                    totalBillDp: "Total Tagihan DP",
-                    remainingBill: "Sisa Tagihan",
-                    dpLabel: "Down Payment (50%)",
-                    remainingLabel: "Sisa Pelunasan",
-                    notesLabel: "Catatan:",
-                    transferTo: "Transfer Pembayaran ke:",
-                    regards: "Hormat Kami,",
-                    designerTitle: "Freelance Graphic Designer",
-                    footerNote: "Dokumen ini dibuat dengan Meramu Design Tools.",
-                    phCompany: "Nama Perusahaan Anda",
-                    phAddress: "Alamat Lengkap",
-                    phClientName: "Nama Klien",
-                    phClientAddress: "Alamat Klien",
-                    phDesc: "Deskripsi Item",
-                    alertApiKey: "Masukkan API Key Gemini dulu ya! (Gratis di aistudio.google.com)",
-                    alertSaveError: "Maaf, terjadi kesalahan saat menyimpan gambar.",
-                    alertCopy: "Teks berhasil disalin!",
-                    confirmOverwrite: "Dokumen saat ini akan tertimpa dengan data yang dipilih. Lanjutkan?",
-                    confirmDelete: "Hapus item riwayat ini?",
-                    aiTitle: "Asisten & Template",
-                    aiTabTemplate: "💬 Template Balasan",
-                    aiTabConsult: "🤖 Konsultasi AI",
-                    aiChooseTemplate: "Pilih template pesan untuk klien:",
-                    aiDraftTitle: "Draft Pesan:",
-                    aiApiKeyNeeded: "Butuh API Key Gemini",
-                    aiApiKeyDesc: "Untuk konsultasi langsung, masukkan API Key Anda (gratis dari Google).",
-                    aiApiKeyNote: "*Key hanya aktif untuk sesi ini (tidak disimpan otomatis).",
-                    aiConnected: "API Key Terhubung",
-                    aiReset: "Reset Key",
-                    aiChatPlaceholder: "Ketik pertanyaanmu...",
-                    aiEmptyState: "Tanyakan apa saja ke Gemini!",
-                    aiEmptyStateSub: "\"Berapa harga pasaran desain logo?\"",
-                    tplPricelist: "📧 Kirim Pricelist & Nego",
-                    tplNego: "📉 Menanggapi Nego Harga",
-                    tplDp: "💸 Menagih DP (Awal Project)",
-                    tplInvoice: "✅ Mengirim Invoice Pelunasan",
-                    currencySymbol: "Rp"
-                },
-                en: {
-                    docTypeLabel: "Document Type:",
-                    quotation: "Quotation",
-                    invoiceDp: "Invoice DP",
-                    invoiceFinal: "Final Invoice",
-                    templateBtn: "Reply Templates",
-                    historyBtn: "History",
-                    saveBtn: "Save",
-                    savedBtn: "Saved",
-                    saveJpegBtn: "Save JPG",
-                    printBtn: "Print",
-                    quotationMain: "QUOTATION",
-                    quotationSub: "Service Proposal",
-                    invoiceDpMain: "INVOICE (DP)",
-                    invoiceDpSub: "Down Payment Bill",
-                    invoiceFinalMain: "INVOICE",
-                    invoiceFinalSub: "Final Payment Bill",
-                    toClient: "To (Client)",
-                    docNumber: "Doc. Number",
-                    date: "Date",
-                    validUntil: "Valid Until",
-                    dueDate: "Due Date",
-                    scopeHeader: "Scope of Work",
-                    qtyHeader: "Qty",
-                    priceHeader: "Price",
-                    totalHeader: "Total",
-                    addItem: "Add New Item",
-                    subtotal: "Subtotal",
-                    discount: "Discount",
-                    tax: "Tax (VAT)",
-                    totalProject: "Total Project",
-                    total: "Total",
-                    lessDp: "Less DP (Paid)",
-                    totalBillDp: "Total DP Bill",
-                    remainingBill: "Remaining Bill",
-                    dpLabel: "Down Payment (50%)",
-                    remainingLabel: "Remaining Balance",
-                    notesLabel: "Notes:",
-                    transferTo: "Payment Transfer to:",
-                    regards: "Best Regards,",
-                    designerTitle: "Freelance Graphic Designer",
-                    footerNote: "Document created with Meramu Design Tools.",
-                    phCompany: "Your Company Name",
-                    phAddress: "Full Address",
-                    phClientName: "Client Name",
-                    phClientAddress: "Client Address",
-                    phDesc: "Item Description",
-                    alertApiKey: "Please enter Gemini API Key first! (Free at aistudio.google.com)",
-                    alertSaveError: "Sorry, an error occurred while saving the image.",
-                    alertCopy: "Text copied successfully!",
-                    confirmOverwrite: "Current document will be overwritten. Continue?",
-                    confirmDelete: "Delete this history item?",
-                    aiTitle: "Assistant & Templates",
-                    aiTabTemplate: "💬 Reply Templates",
-                    aiTabConsult: "🤖 AI Consultant",
-                    aiChooseTemplate: "Choose message template:",
-                    aiDraftTitle: "Draft Message:",
-                    aiApiKeyNeeded: "Gemini API Key Required",
-                    aiApiKeyDesc: "For direct consultation, enter your API Key (free from Google).",
-                    aiApiKeyNote: "*Key is only active for this session (not saved automatically).",
-                    aiConnected: "API Key Connected",
-                    aiReset: "Reset Key",
-                    aiChatPlaceholder: "Type your question...",
-                    aiEmptyState: "Ask Gemini anything!",
-                    aiEmptyStateSub: "\"What is the market price for logo design?\"",
-                    tplPricelist: "📧 Send Pricelist & Negotiation",
-                    tplNego: "📉 Responding to Price Negotiation",
-                    tplDp: "💸 Requesting DP (Project Start)",
-                    tplInvoice: "✅ Sending Final Invoice",
-                    currencySymbol: "$"
-                }
-            };
-
-            const t = translations[lang];
-
             // Load data dari LocalStorage
             React.useEffect(() => {
                 const loadedHistory = localStorage.getItem('invoiceHistory');
@@ -328,18 +179,24 @@
                 if (savedCounters) {
                     setMonthlyCounters(JSON.parse(savedCounters));
                 }
+                const savedKey = localStorage.getItem('geminiApiKey');
+                if (savedKey) {
+                    setUserApiKey(savedKey);
+                }
             }, []);
 
             // --- FUNGSI AI CHAT (Direct Gemini) ---
             const handleSaveApiKey = (e) => {
                 const key = e.target.value;
                 setUserApiKey(key);
+                localStorage.setItem('geminiApiKey', key);
             };
 
             const callGeminiChat = async () => {
                 if (!chatInput.trim()) return;
+                // Validasi sederhana, meski sudah di-hardcode
                 if (!userApiKey) {
-                    alert(t.alertApiKey);
+                    alert("API Key belum terisi.");
                     return;
                 }
 
@@ -353,7 +210,7 @@
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            contents: [{ parts: [{ text: `You are a business assistant for a freelance designer named Meramu Design. Answer in ${lang === 'en' ? 'English' : 'Indonesian'} language professionally. Question: ${prompt}` }] }]
+                            contents: [{ parts: [{ text: `Kamu adalah asisten bisnis untuk desainer freelance profesional bernama Meramu Design. Jawablah dengan bahasa Indonesia yang santai tapi profesional. Pertanyaan: ${prompt}` }] }]
                         })
                     });
 
@@ -405,7 +262,7 @@
             React.useEffect(() => {
                 const newNumber = generateDocNumber(docType, quotationData.clientName, quotationData.date, monthlyCounters);
                 setQuotationData(prev => ({ ...prev, number: newNumber }));
-            }, [docType]); // Hapus dependensi clientName dan date agar editan manual tidak tertimpa
+            }, [docType, quotationData.clientName, quotationData.date, monthlyCounters]);
 
 
             // Kalkulasi
@@ -419,29 +276,20 @@
 
             const getDocTitle = (type) => {
                 switch(type) {
-                    case 'invoice_dp': return { main: t.invoiceDpMain, sub: t.invoiceDpSub };
-                    case 'invoice_final': return { main: t.invoiceFinalMain, sub: t.invoiceFinalSub };
-                    default: return { main: t.quotationMain, sub: t.quotationSub };
+                    case 'invoice_dp': return { main: 'INVOICE (DP)', sub: 'Tagihan Uang Muka' };
+                    case 'invoice_final': return { main: 'INVOICE', sub: 'Tagihan Pelunasan' };
+                    case 'invoice_full': return { main: 'INVOICE', sub: 'Tagihan Lunas (100%)' }; // New
+                    default: return { main: 'QUOTATION', sub: 'Proposal Penawaran' };
                 }
             }
 
-            const formatCurrency = (amount) => {
-                if (lang === 'en') {
-                    // Simple USD Formatting (Display only, assumes numeric input represents value)
-                    return new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency: 'USD',
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 0,
-                    }).format(amount);
-                } else {
-                    return new Intl.NumberFormat('id-ID', {
-                        style: 'currency',
-                        currency: 'IDR',
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 0,
-                    }).format(amount);
-                }
+            const formatIDR = (amount) => {
+                return new Intl.NumberFormat('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR',
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                }).format(amount);
             };
 
             const handleItemChange = (id, field, value) => {
@@ -473,14 +321,14 @@
                     link.href = canvas.toDataURL('image/jpeg', 0.9);
                     link.click();
                 } catch (err) {
-                    alert(t.alertSaveError);
+                    alert("Maaf, terjadi kesalahan saat menyimpan gambar.");
                 }
             };
 
             const handleSaveToHistory = () => {
                 const newEntry = {
                     id: Date.now(),
-                    saveDate: new Date().toLocaleString(lang === 'en' ? 'en-US' : 'id-ID'),
+                    saveDate: new Date().toLocaleString('id-ID'),
                     docType,
                     quotationData,
                     items,
@@ -510,7 +358,7 @@
             };
 
             const handleLoadFromHistory = (entry) => {
-                if (window.confirm(t.confirmOverwrite)) {
+                if (window.confirm('Dokumen saat ini akan tertimpa dengan data yang dipilih. Lanjutkan?')) {
                     setDocType(entry.docType);
                     setQuotationData(entry.quotationData);
                     setItems(entry.items);
@@ -522,7 +370,7 @@
 
             const handleDeleteHistory = (id, e) => {
                 e.stopPropagation();
-                if (window.confirm(t.confirmDelete)) {
+                if (window.confirm('Hapus item riwayat ini?')) {
                     const updatedHistory = savedHistory.filter(item => item.id !== id);
                     setSavedHistory(updatedHistory);
                     localStorage.setItem('invoiceHistory', JSON.stringify(updatedHistory));
@@ -531,34 +379,19 @@
 
             const handleCopyText = (text) => {
                 navigator.clipboard.writeText(text);
-                alert(t.alertCopy);
+                alert("Teks berhasil disalin!");
             };
 
             const generateReplyTemplate = (type) => {
                 let template = "";
-                const sender = quotationData.senderName;
-                const price = formatCurrency(grandTotal);
-
-                if (lang === 'en') {
-                    if (type === 'nego') {
-                        template = `Hi [Client Name],\n\nThank you for the offer. I'm very interested in helping with this project.\n\nRegarding the budget, for the requested scope (including A, B, C), the price I quoted (${price}) is my best estimate to ensure maximum quality results.\n\nHowever, if the budget is strictly limited to [Nego Price], perhaps we can adjust the scope, for example by reducing [Scope X] or [Scope Y].\n\nWhat do you think? Let's discuss a solution.\n\nBest regards,\n${sender}`;
-                    } else if (type === 'invoice') {
-                        template = `Hi [Client Name],\n\nHope you're having a great day.\n\nAttached is the Invoice for the [DP/Final] payment of the [Project Name] project.\n\nPlease kindly process the payment to the account listed in the invoice so we can proceed with the work/final file delivery.\n\nThank you very much for your cooperation.\n\nBest regards,\n${sender}`;
-                    } else if (type === 'dp') {
-                        template = `Hi [Client Name],\n\nThank you for trusting me with this project.\n\nAs agreed, I will start the initial phase after the Down Payment (DP) of 50% is received. Attached is the DP Invoice.\n\nPlease let me know once the transfer is done so I can schedule the work immediately.\n\nThanks!\n\nBest regards,\n${sender}`;
-                    } else if (type === 'pricelist') {
-                        template = `Hi [Client Name],\n\nThanks for reaching out! It's great to connect with you.\n\nAnswering your inquiry, attached is the Quotation/Pricelist for your project needs. Please review the detailed scope and pricing first.\n\nFeel free to discuss, as the listed prices are negotiable depending on your specific needs or budget.\n\nLooking forward to hearing from you!\n\nBest regards,\n${sender}`;
-                    }
-                } else {
-                    if (type === 'nego') {
-                        template = `Halo [Nama Klien],\n\nTerima kasih atas penawarannya. Saya sangat tertarik untuk membantu project ini.\n\nMengenai budget, untuk scope pekerjaan yang diminta (termasuk A, B, C), harga yang saya ajukan di angka ${price} sudah merupakan estimasi terbaik saya untuk memastikan kualitas hasil maksimal.\n\nNamun, jika budget memang terbatas di angka Rp [Harga Nego], mungkin kita bisa sesuaikan scope-nya, misalnya dengan mengurangi [Scope X] atau [Scope Y].\n\nBagaimana menurut Anda? Mari kita diskusikan solusinya.\n\nSalam,\n${sender}`;
-                    } else if (type === 'invoice') {
-                        template = `Halo [Nama Klien],\n\nSemoga hari Anda menyenangkan.\n\nBerikut saya lampirkan Invoice untuk termin [DP/Pelunasan] project [Nama Project].\n\nMohon dapat diproses pembayarannya ke rekening yang tertera di invoice agar pengerjaan/pengiriman file final dapat segera dilakukan.\n\nTerima kasih banyak atas kerjasamanya.\n\nSalam,\n${sender}`;
-                    } else if (type === 'dp') {
-                        template = `Halo [Nama Klien],\n\nTerima kasih sudah mempercayakan project ini kepada saya.\n\nSesuai kesepakatan, saya akan mulai mengerjakan tahap awal setelah Down Payment (DP) sebesar 50% diterima. Berikut saya lampirkan Invoice DP-nya.\n\nSegera kabari jika transfer sudah dilakukan ya, supaya bisa langsung saya jadwalkan pengerjaannya.\n\nTerima kasih!\n\nSalam,\n${sender}`;
-                    } else if (type === 'pricelist') {
-                        template = `Halo [Nama Klien],\n\nThanks for reaching out! Senang sekali bisa terhubung dengan Anda.\n\nMenjawab inquiry Anda, berikut saya lampirkan Quotation/Pricelist untuk kebutuhan project tersebut. Silakan dipelajari terlebih dahulu detail scope dan harganya.\n\nJangan ragu untuk diskusi ya, karena harga yang tertera masih bisa kita sesuaikan (negotiable) bergantung pada kebutuhan spesifik atau budget yang Anda miliki.\n\nDitunggu kabar baiknya!\n\nSalam,\n${sender}`;
-                    }
+                if (type === 'nego') {
+                    template = `Halo [Nama Klien],\n\nTerima kasih atas penawarannya. Saya sangat tertarik untuk membantu project ini.\n\nMengenai budget, untuk scope pekerjaan yang diminta (termasuk A, B, C), harga yang saya ajukan di angka Rp [Harga Awal] sudah merupakan estimasi terbaik saya untuk memastikan kualitas hasil maksimal.\n\nNamun, jika budget memang terbatas di angka Rp [Harga Nego], mungkin kita bisa sesuaikan scope-nya, misalnya dengan mengurangi [Scope X] atau [Scope Y].\n\nBagaimana menurut Anda? Mari kita diskusikan solusinya.\n\nSalam,\n${quotationData.senderName}`;
+                } else if (type === 'invoice') {
+                    template = `Halo [Nama Klien],\n\nSemoga hari Anda menyenangkan.\n\nBerikut saya lampirkan Invoice untuk termin [DP/Pelunasan] project [Nama Project].\n\nMohon dapat diproses pembayarannya ke rekening yang tertera di invoice agar pengerjaan/pengiriman file final dapat segera dilakukan.\n\nTerima kasih banyak atas kerjasamanya.\n\nSalam,\n${quotationData.senderName}`;
+                } else if (type === 'dp') {
+                    template = `Halo [Nama Klien],\n\nTerima kasih sudah mempercayakan project ini kepada saya.\n\nSesuai kesepakatan, saya akan mulai mengerjakan tahap awal setelah Down Payment (DP) sebesar 50% diterima. Berikut saya lampirkan Invoice DP-nya.\n\nSegera kabari jika transfer sudah dilakukan ya, supaya bisa langsung saya jadwalkan pengerjaannya.\n\nTerima kasih!\n\nSalam,\n${quotationData.senderName}`;
+                } else if (type === 'pricelist') {
+                    template = `Halo [Nama Klien],\n\nThanks for reaching out! Senang sekali bisa terhubung dengan Anda.\n\nMenjawab inquiry Anda, berikut saya lampirkan Quotation/Pricelist untuk kebutuhan project tersebut. Silakan dipelajari terlebih dahulu detail scope dan harganya.\n\nJangan ragu untuk diskusi ya, karena harga yang tertera masih bisa kita sesuaikan (negotiable) bergantung pada kebutuhan spesifik atau budget yang Anda miliki.\n\nDitunggu kabar baiknya!\n\nSalam,\n${quotationData.senderName}`;
                 }
                 setAiResult({ type: 'text', content: template });
             };
@@ -567,55 +400,32 @@
                 <div className="min-h-screen bg-meramu-cream p-4 md:p-8 font-sans print:bg-white print:p-0">
                 
                 {/* Control Panel */}
-                <div className="max-w-4xl mx-auto mb-6 bg-[#FAF9F6] p-4 rounded-lg shadow-sm flex flex-col gap-4 no-print border border-[#D8D4C9]">
-                    
-                    {/* Top Row: Language & Document Type */}
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-4 border-b border-[#E6E8E0] pb-4">
-                        <div className="flex items-center gap-3 w-full md:w-auto">
-                            {/* Lang Switch */}
-                            <div className="flex bg-white border border-[#D1D8C6] rounded-lg p-1">
+                <div className="max-w-4xl mx-auto mb-6 bg-[#FAF9F6] p-4 rounded-lg shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between no-print border border-[#D8D4C9]">
+                    <div className="flex flex-col gap-2 w-full md:w-auto">
+                        <div className="flex items-center gap-2 text-meramu-dark">
+                            <FileText size={20} />
+                            <span className="font-semibold">Jenis Dokumen:</span>
+                        </div>
+                        <div className="flex bg-meramu-cream rounded-lg p-1 gap-1 w-full md:w-auto">
+                            {['quotation', 'invoice_dp', 'invoice_final', 'invoice_full'].map(type => (
                                 <button 
-                                    onClick={() => setLang('id')}
-                                    className={`px-3 py-1 text-xs font-bold rounded flex items-center gap-1 transition-colors ${lang === 'id' ? 'bg-meramu-green text-white' : 'text-gray-400 hover:text-gray-600'}`}
+                                    key={type}
+                                    onClick={() => setDocType(type)}
+                                    className={`flex-1 md:flex-none px-3 py-1 text-xs font-medium rounded-md transition-all ${docType === type ? 'bg-meramu-green text-white shadow' : 'text-meramu-dark hover:bg-white'}`}
                                 >
-                                    🇮🇩 ID
+                                    {type === 'quotation' ? 'Quotation' : type === 'invoice_dp' ? 'Invoice DP' : type === 'invoice_final' ? 'Pelunasan' : 'Full 100%'}
                                 </button>
-                                <button 
-                                    onClick={() => setLang('en')}
-                                    className={`px-3 py-1 text-xs font-bold rounded flex items-center gap-1 transition-colors ${lang === 'en' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-gray-600'}`}
-                                >
-                                    🇺🇸 EN
-                                </button>
-                            </div>
-                            
-                            <div className="h-6 w-px bg-gray-300 hidden md:block"></div>
-
-                            <div className="flex items-center gap-2 text-meramu-dark">
-                                <FileText size={20} />
-                                <span className="font-semibold text-sm hidden sm:inline">{t.docTypeLabel}</span>
-                            </div>
-                            <div className="flex bg-meramu-cream rounded-lg p-1 gap-1 flex-1 md:flex-none">
-                                {['quotation', 'invoice_dp', 'invoice_final'].map(type => (
-                                    <button 
-                                        key={type}
-                                        onClick={() => setDocType(type)}
-                                        className={`flex-1 md:flex-none px-3 py-1 text-xs font-medium rounded-md transition-all ${docType === type ? 'bg-meramu-green text-white shadow' : 'text-meramu-dark hover:bg-white'}`}
-                                    >
-                                        {type === 'quotation' ? t.quotation : type === 'invoice_dp' ? t.invoiceDp : t.invoiceFinal}
-                                    </button>
-                                ))}
-                            </div>
+                            ))}
                         </div>
                     </div>
-
-                    {/* Bottom Row: Actions */}
-                    <div className="flex flex-wrap gap-2 w-full justify-end">
+                    
+                    <div className="flex flex-wrap gap-2 w-full md:w-auto justify-end">
                         <button 
                             onClick={() => setShowAI(true)}
                             className="flex items-center gap-2 bg-white border border-meramu-green text-meramu-green px-3 py-2 rounded-lg hover:bg-green-50 transition-colors text-sm font-bold cursor-pointer shadow-sm"
                         >
                             <MessageSquare size={16} />
-                            <span className="hidden sm:inline">{t.templateBtn}</span>
+                            <span className="hidden sm:inline">Asisten AI</span>
                         </button>
 
                         <button 
@@ -623,7 +433,7 @@
                             className="flex items-center gap-2 bg-white border border-[#D1D8C6] text-meramu-dark px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium cursor-pointer"
                         >
                             <History size={16} />
-                            <span className="hidden sm:inline">{t.historyBtn}</span>
+                            <span className="hidden sm:inline">Riwayat</span>
                         </button>
                         
                         <button 
@@ -631,7 +441,7 @@
                             className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm font-medium cursor-pointer border ${saveStatus === 'saved' ? 'bg-green-100 border-green-200 text-green-700' : 'bg-white border-[#D1D8C6] text-meramu-dark hover:bg-gray-50'}`}
                         >
                             {saveStatus === 'saved' ? <Check size={16} /> : <Save size={16} />}
-                            <span className="hidden sm:inline">{saveStatus === 'saved' ? t.savedBtn : t.saveBtn}</span>
+                            <span className="hidden sm:inline">{saveStatus === 'saved' ? 'Tersimpan' : 'Simpan'}</span>
                         </button>
 
                         <button 
@@ -639,14 +449,14 @@
                             className="flex items-center gap-2 bg-[#D1D8C6] text-meramu-dark px-3 py-2 rounded-lg hover:bg-[#C2CBB5] transition-colors text-sm font-medium cursor-pointer"
                         >
                             <ImageIcon size={16} />
-                            <span className="hidden sm:inline">{t.saveJpegBtn}</span>
+                            <span className="hidden sm:inline">Simpan JPG</span>
                         </button>
                         <button 
                             onClick={handlePrint}
                             className="flex items-center gap-2 bg-meramu-green text-white px-4 py-2 rounded-lg hover:bg-[#407558] transition-colors text-sm font-medium shadow-sm cursor-pointer"
                         >
                             <Printer size={16} />
-                            <span className="hidden sm:inline">{t.printBtn}</span>
+                            <span className="hidden sm:inline">Cetak</span>
                         </button>
                     </div>
                 </div>
@@ -658,7 +468,7 @@
                             <div className="p-4 bg-meramu-green text-white flex justify-between items-center">
                                 <h2 className="text-lg font-bold flex items-center gap-2">
                                     <Sparkles size={20} className="text-yellow-300" /> 
-                                    {t.aiTitle}
+                                    Asisten & Template
                                 </h2>
                                 <button onClick={() => setShowAI(false)} className="text-white/80 hover:text-white">
                                     <X size={20} />
@@ -670,13 +480,13 @@
                                     onClick={() => { setAiTab('reply'); setAiResult(null); }}
                                     className={`flex-1 py-3 text-sm font-medium ${aiTab === 'reply' ? 'text-meramu-green border-b-2 border-meramu-green bg-green-50' : 'text-gray-500 hover:bg-gray-50'}`}
                                 >
-                                    {t.aiTabTemplate}
+                                    💬 Template Balasan
                                 </button>
                                 <button 
                                     onClick={() => { setAiTab('consult'); }}
                                     className={`flex-1 py-3 text-sm font-medium ${aiTab === 'consult' ? 'text-meramu-green border-b-2 border-meramu-green bg-green-50' : 'text-gray-500 hover:bg-gray-50'}`}
                                 >
-                                    {t.aiTabConsult}
+                                    🤖 Konsultasi AI
                                 </button>
                             </div>
 
@@ -684,19 +494,19 @@
                                 {/* TAB 1: TEMPLATE BALASAN */}
                                 {aiTab === 'reply' && (
                                     <div className="space-y-4">
-                                        <p className="text-sm text-gray-600">{t.aiChooseTemplate}</p>
+                                        <p className="text-sm text-gray-600">Pilih template pesan untuk klien:</p>
                                         <div className="grid grid-cols-1 gap-2">
                                             <button onClick={() => generateReplyTemplate('pricelist')} className="text-left p-3 border rounded-lg bg-green-50 border-meramu-green hover:bg-meramu-cream transition-colors text-sm text-meramu-dark font-medium">
-                                                {t.tplPricelist}
+                                                📧 Kirim Pricelist & Nego
                                             </button>
                                             <button onClick={() => generateReplyTemplate('nego')} className="text-left p-3 border rounded-lg hover:bg-meramu-cream hover:border-meramu-green transition-colors text-sm text-meramu-dark font-medium">
-                                                {t.tplNego}
+                                                📉 Menanggapi Nego Harga
                                             </button>
                                             <button onClick={() => generateReplyTemplate('dp')} className="text-left p-3 border rounded-lg hover:bg-meramu-cream hover:border-meramu-green transition-colors text-sm text-meramu-dark font-medium">
-                                                {t.tplDp}
+                                                💸 Menagih DP (Awal Project)
                                             </button>
                                             <button onClick={() => generateReplyTemplate('invoice')} className="text-left p-3 border rounded-lg hover:bg-meramu-cream hover:border-meramu-green transition-colors text-sm text-meramu-dark font-medium">
-                                                {t.tplInvoice}
+                                                ✅ Mengirim Invoice Pelunasan
                                             </button>
                                         </div>
 
@@ -707,7 +517,7 @@
                                                         <Copy size={16} />
                                                     </button>
                                                 </div>
-                                                <h4 className="text-xs font-bold text-meramu-green uppercase mb-2">{t.aiDraftTitle}</h4>
+                                                <h4 className="text-xs font-bold text-meramu-green uppercase mb-2">Draft Pesan:</h4>
                                                 <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
                                                     {aiResult.content}
                                                 </p>
@@ -719,39 +529,11 @@
                                 {/* TAB 2: KONSULTASI AI (DIRECT CHAT) */}
                                 {aiTab === 'consult' && (
                                     <div className="space-y-4 h-full flex flex-col">
-                                        {!userApiKey ? (
-                                            <div className="bg-orange-50 border border-orange-200 text-orange-800 text-xs p-3 rounded-lg mb-2">
-                                                <p className="font-bold mb-1">{t.aiApiKeyNeeded}</p>
-                                                <p className="mb-2">{t.aiApiKeyDesc}</p>
-                                                <input 
-                                                    type="text" 
-                                                    placeholder="Paste API Key..."
-                                                    className="w-full p-2 border rounded text-xs bg-white"
-                                                    onChange={handleSaveApiKey}
-                                                    autoFocus
-                                                />
-                                                <p className="mt-1 text-[10px] text-gray-500">{t.aiApiKeyNote}</p>
-                                            </div>
-                                        ) : (
-                                            <div className="flex justify-between items-center bg-green-50 px-3 py-2 rounded-lg border border-green-100 mb-2">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                                    <span className="text-xs text-green-700 font-medium">{t.aiConnected}</span>
-                                                </div>
-                                                <button 
-                                                    onClick={() => setUserApiKey('')}
-                                                    className="text-[10px] text-red-500 hover:text-red-700 hover:underline"
-                                                >
-                                                    {t.aiReset}
-                                                </button>
-                                            </div>
-                                        )}
-
                                         <div className="flex-1 overflow-y-auto bg-white border border-[#D1D8C6] rounded-lg p-3 min-h-[200px]">
                                             {!aiChatResponse ? (
                                                 <div className="text-center text-gray-400 text-sm py-10">
-                                                    <p>{t.aiEmptyState}</p>
-                                                    <p className="text-xs">{t.aiEmptyStateSub}</p>
+                                                    <p>Tanyakan apa saja ke Gemini!</p>
+                                                    <p className="text-xs">"Berapa harga pasaran desain logo?"</p>
                                                 </div>
                                             ) : (
                                                 <div className="text-sm text-gray-700 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: marked.parse(aiChatResponse) }}></div>
@@ -770,7 +552,7 @@
                                                 value={chatInput}
                                                 onChange={(e) => setChatInput(e.target.value)}
                                                 onKeyDown={(e) => e.key === 'Enter' && callGeminiChat()}
-                                                placeholder={t.aiChatPlaceholder}
+                                                placeholder="Ketik pertanyaanmu..."
                                                 className="flex-1 p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-meramu-green"
                                                 disabled={isAiLoading}
                                             />
@@ -782,6 +564,64 @@
                                                 <Send size={18} />
                                             </button>
                                         </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* MODAL RIWAYAT */}
+                {showHistory && (
+                    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 no-print">
+                        <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
+                            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-[#FAF9F6] rounded-t-xl">
+                                <h2 className="text-lg font-bold text-meramu-dark flex items-center gap-2">
+                                    <History size={20} /> Riwayat Dokumen
+                                </h2>
+                                <button onClick={() => setShowHistory(false)} className="text-gray-400 hover:text-gray-600">
+                                    <X size={20} />
+                                </button>
+                            </div>
+                            
+                            <div className="overflow-y-auto p-4 custom-scrollbar flex-1 bg-[#FEFCF8]">
+                                {savedHistory.length === 0 ? (
+                                    <div className="text-center py-10 text-gray-400">
+                                        <p>Belum ada riwayat tersimpan.</p>
+                                        <p className="text-xs mt-1">Klik tombol "Simpan" untuk menyimpan dokumen.</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {savedHistory.map((item) => (
+                                            <div 
+                                                key={item.id}
+                                                onClick={() => handleLoadFromHistory(item)}
+                                                className="group border border-[#E6E8E0] bg-white p-4 rounded-lg hover:border-meramu-green hover:shadow-sm cursor-pointer transition-all flex justify-between items-center"
+                                            >
+                                                <div>
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded ${
+                                                            item.docType === 'quotation' ? 'bg-blue-100 text-blue-700' :
+                                                            item.docType === 'invoice_dp' ? 'bg-orange-100 text-orange-700' :
+                                                            item.docType === 'invoice_final' ? 'bg-green-100 text-green-700' :
+                                                            'bg-purple-100 text-purple-700' // For invoice_full
+                                                        }`}>
+                                                            {getDocTitle(item.docType).main}
+                                                        </span>
+                                                        <span className="text-xs text-gray-400">{item.saveDate}</span>
+                                                    </div>
+                                                    <h3 className="font-bold text-meramu-dark">{item.quotationData.clientName}</h3>
+                                                    <p className="text-xs text-[#6B786D]">{item.quotationData.number} • {formatIDR(item.grandTotal)}</p>
+                                                </div>
+                                                <button 
+                                                    onClick={(e) => handleDeleteHistory(item.id, e)}
+                                                    className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                                                    title="Hapus dari riwayat"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </div>
+                                        ))}
                                     </div>
                                 )}
                             </div>
@@ -806,14 +646,14 @@
                                 value={quotationData.senderName}
                                 onChange={(e) => setQuotationData({...quotationData, senderName: e.target.value})}
                                 className="bg-transparent text-right font-bold text-2xl w-full focus:outline-none placeholder-[#A9B388] text-[#F2EFE5]"
-                                placeholder={t.phCompany}
+                                placeholder="Nama Perusahaan Anda"
                             />
                         </div>
                         <textarea 
                             value={quotationData.senderAddress}
                             onChange={(e) => setQuotationData({...quotationData, senderAddress: e.target.value})}
                             className="bg-transparent text-right w-full text-sm opacity-90 focus:outline-none resize-none h-16 text-[#E6E8D8] leading-relaxed"
-                            placeholder={t.phAddress}
+                            placeholder="Alamat Lengkap"
                         />
                         </div>
                     </div>
@@ -823,35 +663,34 @@
                     <div className="p-10">
                     <div className="flex flex-col md:flex-row justify-between gap-10 mb-12">
                         <div className="w-full md:w-1/2">
-                        <h3 className="text-meramu-green text-xs font-bold uppercase tracking-widest mb-3">{t.toClient}</h3>
+                        <h3 className="text-meramu-green text-xs font-bold uppercase tracking-widest mb-3">Ditujukan Kepada (Client)</h3>
                         <input 
                             type="text" 
                             value={quotationData.clientName}
                             onChange={(e) => setQuotationData({...quotationData, clientName: e.target.value})}
                             className="block w-full text-xl font-bold text-meramu-dark mb-2 border-b border-transparent hover:border-[#D1D8C6] focus:border-meramu-green focus:outline-none transition-colors"
-                            placeholder={t.phClientName}
+                            placeholder="Nama Klien"
                         />
                         <textarea 
                             value={quotationData.clientAddress}
                             onChange={(e) => setQuotationData({...quotationData, clientAddress: e.target.value})}
                             className="block w-full text-[#6B786D] resize-none h-20 border-b border-transparent hover:border-[#D1D8C6] focus:border-meramu-green focus:outline-none transition-colors leading-relaxed"
-                            placeholder={t.phClientAddress}
+                            placeholder="Alamat Klien"
                         />
                         </div>
                         <div className="w-full md:w-5/12 space-y-4">
                         <div className="flex justify-between items-center border-b border-[#EFECE5] pb-2">
-                            <span className="text-[#6B786D] text-sm font-medium">{t.docNumber}</span>
+                            <span className="text-[#6B786D] text-sm font-medium">No. Dokumen</span>
                             <input 
                             type="text" 
                             value={quotationData.number}
-                            onChange={(e) => setQuotationData({...quotationData, number: e.target.value})}
-                            className="text-right font-bold text-meramu-dark w-full bg-transparent focus:outline-none border-b border-transparent hover:border-[#D1D8C6] focus:border-meramu-green transition-colors"
-                            placeholder="Nomor Dokumen"
-                            title="Nomor dokumen (Dapat diubah)"
+                            readOnly
+                            className="text-right font-bold text-meramu-dark w-full bg-transparent focus:outline-none"
+                            title="Nomor dokumen dibuat otomatis"
                             />
                         </div>
                         <div className="flex justify-between items-center border-b border-[#EFECE5] pb-2">
-                            <span className="text-[#6B786D] text-sm font-medium">{t.date}</span>
+                            <span className="text-[#6B786D] text-sm font-medium">Tanggal</span>
                             <input 
                             type="date" 
                             value={quotationData.date}
@@ -861,7 +700,7 @@
                         </div>
                         <div className="flex justify-between items-center border-b border-[#EFECE5] pb-2">
                             <span className="text-[#6B786D] text-sm font-medium">
-                                {docType === 'quotation' ? t.validUntil : t.dueDate}
+                                {docType === 'quotation' ? 'Berlaku Sampai' : 'Jatuh Tempo'}
                             </span>
                             <input 
                             type="date" 
@@ -877,10 +716,10 @@
                     <table className="w-full mb-8">
                         <thead>
                         <tr className="bg-[#F2F4ED] border-y border-[#E6E8E0]">
-                            <th className="text-left py-4 px-3 text-xs font-bold text-meramu-green uppercase tracking-widest w-1/2">{t.scopeHeader}</th>
-                            <th className="text-center py-4 px-3 text-xs font-bold text-meramu-green uppercase tracking-widest w-20">{t.qtyHeader}</th>
-                            <th className="text-right py-4 px-3 text-xs font-bold text-meramu-green uppercase tracking-widest w-36">{t.priceHeader}</th>
-                            <th className="text-right py-4 px-3 text-xs font-bold text-meramu-green uppercase tracking-widest w-40">{t.totalHeader}</th>
+                            <th className="text-left py-4 px-3 text-xs font-bold text-meramu-green uppercase tracking-widest w-1/2">Lingkup Pekerjaan (Scope)</th>
+                            <th className="text-center py-4 px-3 text-xs font-bold text-meramu-green uppercase tracking-widest w-20">Qty</th>
+                            <th className="text-right py-4 px-3 text-xs font-bold text-meramu-green uppercase tracking-widest w-36">Harga</th>
+                            <th className="text-right py-4 px-3 text-xs font-bold text-meramu-green uppercase tracking-widest w-40">Total</th>
                             <th className="w-10 no-print"></th>
                         </tr>
                         </thead>
@@ -893,7 +732,7 @@
                                 onChange={(e) => handleItemChange(item.id, 'description', e.target.value)}
                                 className="w-full bg-transparent focus:outline-none font-medium text-meramu-dark resize-none h-auto min-h-[1.5rem]"
                                 rows={2}
-                                placeholder={t.phDesc}
+                                placeholder="Deskripsi Item"
                                 style={{ height: 'auto', minHeight: '40px' }}
                                 />
                             </td>
@@ -908,7 +747,7 @@
                             </td>
                             <td className="py-4 px-3 text-right align-top">
                                 <div className="flex items-center justify-end">
-                                    <span className="text-[#A9B388] text-xs mr-2">{t.currencySymbol}</span>
+                                    <span className="text-[#A9B388] text-xs mr-2">Rp</span>
                                     <input 
                                     type="number" 
                                     min="0"
@@ -919,7 +758,7 @@
                                 </div>
                             </td>
                             <td className="py-4 px-3 text-right font-bold text-meramu-dark align-top">
-                                {formatCurrency(item.qty * item.price)}
+                                {formatIDR(item.qty * item.price)}
                             </td>
                             <td className="py-4 px-3 text-center no-print align-top">
                                 <button 
@@ -941,20 +780,20 @@
                         <div className="bg-[#F2F4ED] p-1 rounded-full">
                         <Plus size={14} /> 
                         </div>
-                        {t.addItem}
+                        Tambah Item Baru
                     </button>
 
                     {/* Bagian Total */}
                     <div className="flex flex-col md:flex-row justify-end border-t-2 border-meramu-green pt-8">
                         <div className="w-full md:w-1/2 lg:w-5/12 space-y-4">
                         <div className="flex justify-between items-center text-[#6B786D]">
-                            <span className="font-medium">{t.subtotal}</span>
-                            <span className="font-medium">{formatCurrency(subtotal)}</span>
+                            <span className="font-medium">Subtotal</span>
+                            <span className="font-medium">{formatIDR(subtotal)}</span>
                         </div>
                         
                         <div className="flex justify-between items-center text-[#4A5D4F] bg-[#F2F4ED] p-2 rounded -mx-2">
                             <div className="flex items-center gap-2">
-                            <span className="font-medium">{t.discount}</span>
+                            <span className="font-medium">Diskon</span>
                             <div className="flex items-center bg-white border border-[#D1D8C6] rounded px-2 py-0.5 no-print shadow-sm">
                                 <input 
                                 type="number" 
@@ -968,12 +807,12 @@
                             </div>
                             <span className="hidden print:inline text-xs font-medium">({discountPercent}%)</span>
                             </div>
-                            <span className="font-medium">- {formatCurrency(discountAmount)}</span>
+                            <span className="font-medium">- {formatIDR(discountAmount)}</span>
                         </div>
 
                         <div className="flex justify-between items-center text-[#6B786D]">
                             <div className="flex items-center gap-2">
-                            <span className="font-medium">{t.tax}</span>
+                            <span className="font-medium">Pajak (PPN)</span>
                             <div className="flex items-center bg-[#F2F4ED] rounded px-2 py-0.5 no-print">
                                 <input 
                                 type="number" 
@@ -987,47 +826,51 @@
                             </div>
                             <span className="hidden print:inline text-xs">({taxPercent}%)</span>
                             </div>
-                            <span className="font-medium">{formatCurrency(taxAmount)}</span>
+                            <span className="font-medium">{formatIDR(taxAmount)}</span>
                         </div>
 
                         {/* Grand Total */}
                         <div className={`flex justify-between items-center pt-4 ${docType === 'invoice_final' ? 'text-[#6B786D] pb-2' : 'border-t border-[#EFECE5] mt-2 text-2xl font-bold text-meramu-dark'}`}>
                             <span className={docType === 'invoice_final' ? "font-medium" : ""}>
-                                {docType === 'invoice_final' ? t.totalProject : t.total}
+                                {docType === 'invoice_final' ? 'Total Project' : 'Total'}
                             </span>
-                            <span>{formatCurrency(grandTotal)}</span>
+                            <span>{formatIDR(grandTotal)}</span>
                         </div>
 
-                        {/* Pengurangan DP */}
+                        {/* Pengurangan DP (Hanya untuk Invoice Pelunasan) */}
                         {docType === 'invoice_final' && (
                             <div className="flex justify-between items-center text-[#B91C1C] bg-red-50 p-2 rounded -mx-2 border border-red-100">
-                                <span className="font-medium">{t.lessDp}</span>
-                                <span className="font-bold">- {formatCurrency(dpAmount)}</span>
+                                <span className="font-medium">Dikurangi DP (Sudah Dibayar)</span>
+                                <span className="font-bold">- {formatIDR(dpAmount)}</span>
                             </div>
                         )}
 
-                        {/* Total Tagihan Akhir */}
-                        {(docType === 'invoice_dp' || docType === 'invoice_final') && (
+                        {/* Total Tagihan Akhir (Untuk DP, Pelunasan, atau Full) */}
+                        {docType !== 'quotation' && (
                             <div className="flex justify-between items-center pt-4 border-t-2 border-meramu-green mt-2">
                                 <span className="text-xl md:text-2xl font-bold text-meramu-dark">
-                                    {docType === 'invoice_dp' ? t.totalBillDp : t.remainingBill}
+                                    {docType === 'invoice_dp' ? 'Total Tagihan DP' : docType === 'invoice_final' ? 'Sisa Tagihan' : 'Total Tagihan'}
                                 </span>
                                 <span className="text-xl md:text-2xl font-bold text-meramu-green">
-                                    {formatCurrency(docType === 'invoice_dp' ? dpAmount : remainingAmount)}
+                                    {formatIDR(
+                                        docType === 'invoice_dp' ? dpAmount : 
+                                        docType === 'invoice_final' ? remainingAmount : 
+                                        grandTotal // for invoice_full
+                                    )}
                                 </span>
                             </div>
                         )}
 
-                        {/* Info DP */}
+                        {/* Info DP (Hanya untuk Quotation biasa) */}
                         {docType === 'quotation' && (
                             <div className="bg-[#F9FBF7] rounded-lg p-3 mt-4 border border-[#E6E8E0] print:border-none print:p-0 print:bg-transparent">
                                 <div className="flex justify-between items-center mb-2 pb-2 border-b border-dashed border-[#A9B388]">
-                                <span className="font-semibold text-[#4A5D4F]">{t.dpLabel}</span>
-                                <span className="font-bold text-[#4A5D4F]">{formatCurrency(dpAmount)}</span>
+                                <span className="font-semibold text-[#4A5D4F]">Down Payment (50%)</span>
+                                <span className="font-bold text-[#4A5D4F]">{formatIDR(dpAmount)}</span>
                                 </div>
                                 <div className="flex justify-between items-center pt-1">
-                                <span className="text-sm font-medium text-[#6B786D]">{t.remainingLabel}</span>
-                                <span className="text-sm font-medium text-[#6B786D]">{formatCurrency(remainingAmount)}</span>
+                                <span className="text-sm font-medium text-[#6B786D]">Sisa Pelunasan</span>
+                                <span className="text-sm font-medium text-[#6B786D]">{formatIDR(remainingAmount)}</span>
                                 </div>
                             </div>
                         )}
@@ -1038,7 +881,7 @@
                     {/* Footer & Tanda Tangan */}
                     <div className="mt-20 grid grid-cols-1 md:grid-cols-2 gap-12">
                         <div>
-                        <h4 className="font-bold text-meramu-green mb-3 text-sm uppercase tracking-wider">{t.notesLabel}</h4>
+                        <h4 className="font-bold text-meramu-green mb-3 text-sm uppercase tracking-wider">Catatan:</h4>
                         <textarea 
                             value={quotationData.notes}
                             onChange={(e) => setQuotationData({...quotationData, notes: e.target.value})}
@@ -1046,13 +889,13 @@
                         />
                         
                         <div className="mt-6 text-xs text-[#8C9885]">
-                            <p>{t.transferTo}</p>
+                            <p>Transfer Pembayaran ke:</p>
                             <p className="font-medium text-[#6B786D] text-sm mt-1">BCA 5271779586 a.n Andreana Dewi</p>
                         </div>
                         </div>
                         
                         <div className="text-center md:text-right flex flex-col items-center md:items-end justify-end">
-                        <p className="text-sm text-[#6B786D] mb-20">{t.regards}</p>
+                        <p className="text-sm text-[#6B786D] mb-20">Hormat Kami,</p>
                         <div className="border-t-2 border-meramu-green w-48"></div>
                         <input 
                             type="text"
@@ -1060,14 +903,14 @@
                             onChange={(e) => setQuotationData({...quotationData, senderName: e.target.value})}
                             className="text-center md:text-right mt-3 font-bold text-lg text-meramu-dark focus:outline-none bg-transparent w-full"
                         />
-                        <p className="text-xs text-[#8C9885] mt-1">{t.designerTitle}</p>
+                        <p className="text-xs text-[#8C9885] mt-1">Freelance Graphic Designer</p>
                         </div>
                     </div>
                     </div>
                     
                     {/* Footer Bar */}
                     <div className="bg-[#FAF9F6] p-4 text-center text-xs text-[#A9B388] no-print border-t border-[#EFECE5]">
-                    {t.footerNote}
+                    Dokumen ini dibuat dengan Meramu Design Tools.
                     </div>
                 </div>
                 </div>
