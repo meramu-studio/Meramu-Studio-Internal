@@ -1,633 +1,961 @@
 <!DOCTYPE html>
-<html lang="id" class="dark">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meramu Design - Rate Card 2026</title>
+    <title>Aplikasi Quotation & Invoice - Meramu Design</title>
     
+    <!-- Load React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Load Babel untuk compile kode React di browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Load html2canvas untuk fitur Save JPEG -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    
+    <!-- Load Markdown Parser untuk respon AI yang rapi -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- Konfigurasi Tailwind untuk Font & Warna -->
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
                     colors: {
                         meramu: {
                             green: '#569674',
                             cream: '#fef5da',
-                            dark: '#121B16',
-                            glass: 'rgba(255, 255, 255, 0.03)',
-                            border: 'rgba(255, 255, 255, 0.08)'
-                        }
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 1s ease-out forwards',
-                        'slide-up': 'slideUp 0.8s ease-out forwards',
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                    },
-                    keyframes: {
-                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
-                        slideUp: {
-                            '0%': { transform: 'translateY(20px)', opacity: '0' },
-                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                            dark: '#2A4036'
                         }
                     }
                 }
             }
         }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        body { scroll-behavior: smooth; letter-spacing: -0.01em; }
-        .glass-card { 
-            background: rgba(255, 255, 255, 0.02); 
-            backdrop-filter: blur(20px); 
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            transform-style: preserve-3d;
+        body { font-family: 'Inter', sans-serif; }
+        @media print {
+            @page { margin: 0; size: auto; }
+            body { -webkit-print-color-adjust: exact; }
+            .no-print { display: none !important; }
         }
-        .glass-bar {
-            background: rgba(18, 27, 22, 0.95);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        /* Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
         }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .card-3d { transition: transform 0.1s ease-out; will-change: transform; }
-        
-        /* Custom Scrollbar for Sidebar List */
-        .custom-scroll::-webkit-scrollbar { width: 4px; }
-        .custom-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
-        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #569674;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #407558;
+        }
+        /* Markdown Styles for AI Response */
+        .prose h1, .prose h2, .prose h3 { font-weight: bold; margin-top: 0.5em; margin-bottom: 0.25em; color: #2A4036; }
+        .prose p { margin-bottom: 0.5em; }
+        .prose ul { list-style-type: disc; padding-left: 1.5em; margin-bottom: 0.5em; }
+        .prose strong { color: #569674; }
     </style>
 </head>
-<body class="bg-meramu-dark text-meramu-cream/90 font-sans antialiased relative overflow-x-hidden">
-    <!-- Background Decor -->
-    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-        <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-meramu-green/10 rounded-full blur-[120px] animate-pulse-slow"></div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-meramu-cream/5 rounded-full blur-[120px] animate-pulse-slow" style="animation-delay: 2s"></div>
-    </div>
-
+<body class="bg-meramu-cream">
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+        // Definisi Ikon
+        const Plus = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        );
+        const Trash2 = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+        );
+        const Printer = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+        );
+        const FileText = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        );
+        const Save = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+        );
+        const History = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 3v5h5"></path><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"></path><path d="M12 7v5l4 2"></path></svg>
+        );
+        const X = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        );
+        const Check = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="20 6 9 17 4 12"></polyline></svg>
+        );
+        const Sparkles = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+            </svg>
+        );
+        const Copy = ({ size = 16, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+            </svg>
+        );
+        const ImageIcon = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+            </svg>
+        );
+        const Send = ({ size = 16, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+        );
+        const MessageSquare = ({ size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+        );
 
-        const content = {
-            id: {
-                hero: { title1: "Crafting a", accent: "Magical Shift", title2: "for Your Brand🪄" },
-                tabs: { branding: "Brand Identity", printed: "Printed Media", social: "Social Media", digital: "Digital & UI/UX" },
-                msmeBtn: "Special Rate UMKM",
-                sidebar: { title: "Daftar Pesanan", empty: "Pilih paket untuk memulai kalkulasi", addons: "Tambahan Khusus", total: "Total Estimasi", cta: "Konsultasi via WA" },
-                modal: { title: "Special Rate UMKM", desc: "Lengkapi data untuk mendapatkan penawaran eksklusif bisnis lokal.", back: "Kembali ke Beranda" },
-                tc: { title: "Syarat & Ketentuan", flow: "Alur Projek" },
-                mobileBar: { total: "Estimasi", cta: "Order" }
-            },
-            en: {
-                hero: { title1: "Crafting a", accent: "Magical Shift", title2: "for Your Brand🪄" },
-                tabs: { branding: "Brand Identity", printed: "Printed Media", social: "Social Media", digital: "Digital & UI/UX" },
-                msmeBtn: "MSME Special Rate",
-                sidebar: { title: "Selected Services", empty: "Select packages to start calculating", addons: "Special Add-ons", total: "Total Estimate", cta: "Consult via WA" },
-                modal: { title: "MSME Special Rate", desc: "Complete the data to receive exclusive offers for local businesses.", back: "Back to Home" },
-                tc: { title: "Terms & Conditions", flow: "Project Flow" },
-                mobileBar: { total: "Estimate", cta: "Order" }
-            }
-        };
-
-        const packagesData = {
-            branding: {
-                title: { id: 'Brand Identity', en: 'Brand Identity' },
-                timeline: { id: '7-21 Hari Kerja', en: '7-21 Business Days' },
-                sections: [
-                    {
-                        subTitle: { id: 'Logo Development', en: 'Logo Development' },
-                        items: [
-                            { 
-                                id: 'b1', 
-                                name: 'Package Basic', 
-                                price: {id: 3000000, en: 350}, 
-                                features: { 
-                                    id: ['2 Alternatif Logo', '5-7 Hari Kerja', '3x Revisi (Opsi Terpilih)', 'File Master (AI, EPS, SVG, PNG, JPG)'], 
-                                    en: ['2 Logo alternatives', '5-7 Business days delivery', '3x Revision (Selected alt)', 'File (JPG, PNG, SVG, AI, EPS)'] 
-                                } 
-                            },
-                            { 
-                                id: 'b2', 
-                                name: 'Package Standard', 
-                                price: {id: 3500000, en: 450}, 
-                                features: { 
-                                    id: ['3 Alternatif Logo', '5-7 Hari Kerja', '3x Revisi (Opsi Terpilih)', 'Desain Kartu Nama', 'Desain Kop Surat', 'Brand Guidelines', 'File Master Lengkap'], 
-                                    en: ['3 Logo alternatives', '5-7 Business days delivery', '3x Revision (Selected alt)', 'Business card design', 'Letterhead design', 'Brand guidelines', 'Full Source Files'] 
-                                } 
-                            },
-                            { 
-                                id: 'b3', 
-                                name: 'Package Creative', 
-                                price: {id: 4000000, en: 600}, 
-                                tag: 'Popular', 
-                                features: { 
-                                    id: ['3 Alternatif Logo', '5x Revisi (Opsi Terpilih)', 'Kartu Nama & Kop Surat', 'Desain ID Card / Namecard', 'Brand Guidelines', 'File Master Lengkap'], 
-                                    en: ['3 Logo alternatives', '5x Revision (Selected alt)', 'Business card design', 'Letterhead & Namecard design', 'Brand guidelines', 'Full Source Files'] 
-                                } 
-                            },
-                            { 
-                                id: 'b4', 
-                                name: 'Package Premium', 
-                                price: {id: 5000000, en: 850}, 
-                                features: { 
-                                    id: ['4 Alternatif Logo', '5x Revisi (Opsi Terpilih)', 'Stationery (Kartu Nama, Kop, ID, Lanyard)', 'Template Sosmed', 'Desain Landing Page', 'Brand Guidelines', 'File Master Lengkap'], 
-                                    en: ['4 Logo alternatives', '5x Revision', 'Full Stationery (Card, Letter, ID, Lanyard)', 'Social media template', 'Landing page design', 'Brand guidelines', 'Full Source Files'] 
-                                } 
-                            }
-                        ]
-                    },
-                    {
-                        subTitle: { id: 'Packaging Design', en: 'Packaging Design' },
-                        items: [
-                            { id: 'p1', name: 'Label Design', price: {id: 1500000, en: 250}, features: { id: ['Desain Label (Stiker/Kaleng)', '3D Mockup Visual', 'Siap Cetak (Die-cut)', '3x Revisi'], en: ['Label Design (Sticker/Can)', '3D Visual Mockup', 'Print Ready (Die-cut)', '3x Revision'] } },
-                            { id: 'p2', name: 'Box & Pouch', price: {id: 2800000, en: 450}, features: { id: ['Desain Kemasan Luar', 'Pola Potong (Dieline)', '3D Mockup Premium', 'Visualisasi Rak'], en: ['Outer Box/Pouch Design', 'Custom Dielines', 'Premium 3D Mockup', 'Shelf Visualization'] } },
-                            { id: 'p3', name: 'Unboxing Exp', price: {id: 4500000, en: 800}, features: { id: ['Box + Label + Thank You Card', 'Tissue Paper Pattern', 'Instruction Manual', 'Full 3D Render'], en: ['Box + Label + Inserts', 'Tissue Pattern Design', 'Instruction Manual', 'Full 3D Rendering'] } }
-                        ]
-                    },
-                    {
-                        subTitle: { id: 'Mascot & Illustration', en: 'Mascot & Illustration' },
-                        items: [
-                            { id: 'm1', name: 'Single Mascot', price: {id: 1800000, en: 300}, features: { id: ['1 Desain Karakter', '1 Pose Utama', 'Full Color & Shading', 'Komersial Use'], en: ['1 Character Design', '1 Main Pose', 'Full Color & Shading', 'Commercial License'] } },
-                            { id: 'm2', name: 'Mascot Pack', price: {id: 3500000, en: 600}, features: { id: ['1 Desain Karakter', '3 Pose Aksi (Gesture)', 'Ekspresi Wajah', 'Vector Source File'], en: ['1 Character Design', '3 Action Poses', 'Facial Expressions', 'Vector Source File'] } },
-                            { id: 'm3', name: 'Character Sheet', price: {id: 5500000, en: 1000}, features: { id: ['Tampak Depan/Samping/Belakang', '5 Pose Aksi', 'Turunan Icon', 'Panduan Penggunaan'], en: ['Turnaround View (F/S/B)', '5 Action Poses', 'Icon Derivations', 'Usage Guidelines'] } }
-                        ]
-                    }
-                ]
-            },
-            digital: {
-                title: { id: 'Digital & UI/UX', en: 'Digital & UI/UX' },
-                timeline: { id: '10-21 Hari Kerja', en: '10-21 Business Days' },
-                items: [
-                    { id: 'u1', name: 'Landing Page', price: {id: 2500000, en: 800}, features: { id: ['Hingga 5 Section', 'Responsive Design', 'UI Kit', 'High-fidelity Prototype'], en: ['Up to 5 Custom Sections', 'Fully Responsive Design', 'Figma UI Kit', 'Interactive Prototype'] } },
-                    { id: 'u2', name: 'Business Website', price: {id: 5500000, en: 2500}, features: { id: ['Hingga 10 Halaman', 'Integrasi CMS', 'SEO Basic', 'Setup Domain/Hosting'], en: ['Multi-page Website', 'CMS Integration', 'Basic SEO Setup', 'Hosting Management'] } },
-                    { id: 'u3', name: 'Mobile App Design', price: {id: 7000000, en: 3500}, features: { id: ['Hingga 15 Screens', 'User Flow Design', 'Asset Export', 'Developer Handover'], en: ['UX Research & Flows', 'Up to 15 Premium Screens', 'Design System', 'Dev Handover'] } }
-                ]
-            },
-            printed: {
-                title: { id: 'Printed Media', en: 'Printed Media' },
-                timeline: { id: '10-14 Hari Kerja', en: '10-14 Business Days' },
-                items: [
-                    { id: 'a1', name: 'Company Profile', price: {id: 2500000, en: 600}, features: { id: ['Hingga 16 Halaman', 'Digital PDF', 'Siap Cetak'], en: ['Up to 16 Pages', 'Digital PDF Copy', 'Print-ready Files'] } },
-                    { id: 'a2', name: 'Annual Report', price: {id: 100000, en: 45}, isPerUnit: true, unitName: {id: 'Hal', en: 'Page'}, features: { id: ['Layout Profesional', 'Visualisasi Data', 'Gaya Minimalis', 'Siap Cetak'], en: ['Data Visualization', 'Professional Layout', 'Creative Infographics', 'Print Ready'] } }
-                ]
-            },
-            social: {
-                title: { id: 'Social Media', en: 'Social Media' },
-                timeline: { id: 'Bulanan', en: 'Monthly' },
-                items: [
-                    { id: 's1', name: 'Growth Package', price: {id: 2500000, en: 500}, features: { id: ['12 Post / Bulan', '2 Reels / Bulan', 'Copywriting', 'Laporan Bulanan'], en: ['12 Creative Posts', '2 High-quality Reels', 'Copywriting', 'Monthly Insights'] } },
-                    { id: 's2', name: 'Business Suite', price: {id: 4500000, en: 950}, features: { id: ['24 Post / Bulan', '4 Reels / Bulan', 'Admin Posting', 'Analitik Lengkap'], en: ['24 Creative Posts', '4 Cinematic Reels', 'Caption & Scheduling', 'Full Performance Audit'] } }
-                ]
-            }
-        };
-
-        const addOnsList = [
-            // Rate berbeda signifikan antara ID (Local) dan EN (Inter) sesuai request
-            { id: 'stk', name: { id: 'Sticker Set', en: 'Sticker Set' }, price: {id: 450000, en: 150} },
-            { id: 'rsh', name: { id: 'Pesanan Kilat (Rush)', en: 'Rush Order (48h)' }, price: {id: 1000000, en: 300} },
-            { id: 'rev', name: { id: 'Unlimited Revision', en: 'Unlimited Revision' }, price: {id: 1500000, en: 400} },
-        ];
-
-        const RateCardApp = () => {
-            const [lang, setLang] = useState('id');
-            const [activeTab, setActiveTab] = useState('branding');
+        const QuotationApp = () => {
+            const [docType, setDocType] = React.useState('quotation');
+            const [showHistory, setShowHistory] = React.useState(false);
+            const [showAI, setShowAI] = React.useState(false); 
+            const [savedHistory, setSavedHistory] = React.useState([]);
+            const [saveStatus, setSaveStatus] = React.useState(null);
             
-            // Multi-select Logic: Cart stores objects { ...pkg, quantity: 1 }
-            const [cart, setCart] = useState([]);
-            const [selectedAddOns, setSelectedAddOns] = useState([]);
+            // State Counter Nomor Dokumen
+            const [monthlyCounters, setMonthlyCounters] = React.useState({});
+
+            // State untuk AI Modal & API Key
+            const [aiTab, setAiTab] = React.useState('reply'); // 'reply' (Template) or 'consult' (Real Chat)
             
-            const [isUmkmModal, setIsUmkmModal] = useState(false);
-            const [showBackToTop, setShowBackToTop] = useState(false);
+            // --- API KEY PRE-FILLED ---
+            const [userApiKey, setUserApiKey] = React.useState('AIzaSyBGuzz9qV-2o11rQi4hgVctx9-wpQuA7dk');
+            
+            const [chatInput, setChatInput] = React.useState('');
+            const [isAiLoading, setIsAiLoading] = React.useState(false);
+            const [aiChatResponse, setAiChatResponse] = React.useState('');
+            const [aiResult, setAiResult] = React.useState(null); // Untuk template
 
-            const t = content[lang];
+            const [quotationData, setQuotationData] = React.useState({
+                number: '', 
+                date: new Date().toISOString().slice(0, 10),
+                dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+                senderName: 'Meramu Design',
+                senderAddress: 'PTB Duren Sawit, JL Bima B3 no 11,\nKlender, Jakarta Timur',
+                senderPhone: '+62 812-9988-7766',
+                clientName: 'Klien Project Mesin Otomatis',
+                clientAddress: 'Via Threads Inquiry',
+                notes: 'Estimasi Timeline Pengerjaan: 4-6 Minggu.\nHarga di atas adalah biaya desain (Design Fee), tidak termasuk biaya produksi fisik/cetak stiker mesin.',
+            });
 
-            useEffect(() => {
-                const handleScroll = () => {
-                    if (window.scrollY > 300) setShowBackToTop(true);
-                    else setShowBackToTop(false);
-                };
-                window.addEventListener('scroll', handleScroll);
-                return () => window.removeEventListener('scroll', handleScroll);
+            const [items, setItems] = React.useState([
+                { id: 1, description: 'Brand Identity (Logo, Usage, Color Palette, Typography, Visual System)', qty: 1, price: 6500000 },
+                { id: 2, description: 'Machine Surface Branding (Wrap Design & Physical Mockup)', qty: 1, price: 3500000 },
+                { id: 3, description: 'UI/UX Design for Machine Interface (Kiosk Mode/Touch Screen)', qty: 1, price: 7000000 },
+                { id: 4, description: 'Supporting Visual Components (Icons, Instructional Graphics)', qty: 1, price: 1500000 },
+            ]);
+
+            const [discountPercent, setDiscountPercent] = React.useState(5);
+            const [taxPercent, setTaxPercent] = React.useState(0);
+            const [isDpManual, setIsDpManual] = React.useState(false);
+            const [manualDp, setManualDp] = React.useState(0);
+
+            // Load data dari LocalStorage
+            React.useEffect(() => {
+                const loadedHistory = localStorage.getItem('invoiceHistory');
+                if (loadedHistory) {
+                    setSavedHistory(JSON.parse(loadedHistory));
+                }
+                const savedCounters = localStorage.getItem('monthlyCounters');
+                if (savedCounters) {
+                    setMonthlyCounters(JSON.parse(savedCounters));
+                }
+                const savedKey = localStorage.getItem('geminiApiKey');
+                if (savedKey) {
+                    setUserApiKey(savedKey);
+                }
             }, []);
 
-            // Toggle logic for Packages
-            const togglePackage = (pkg) => {
-                setCart(prev => {
-                    const exists = prev.find(item => item.id === pkg.id);
-                    if (exists) {
-                        return prev.filter(item => item.id !== pkg.id); // Remove
-                    } else {
-                        // Add with default qty 1 (or 10 for pages/units if preferred, but 1 is safer)
-                        return [...prev, { ...pkg, quantity: 1 }]; 
+            // --- FUNGSI AI CHAT (Direct Gemini) ---
+            const handleSaveApiKey = (e) => {
+                const key = e.target.value;
+                setUserApiKey(key);
+                localStorage.setItem('geminiApiKey', key);
+            };
+
+            const callGeminiChat = async () => {
+                if (!chatInput.trim()) return;
+                // Validasi sederhana, meski sudah di-hardcode
+                if (!userApiKey) {
+                    alert("API Key belum terisi.");
+                    return;
+                }
+
+                setIsAiLoading(true);
+                const prompt = chatInput;
+                setChatInput(''); // Clear input
+
+                try {
+                    // Endpoint Gemini Flash
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${userApiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: `Kamu adalah asisten bisnis untuk desainer freelance profesional bernama Meramu Design. Jawablah dengan bahasa Indonesia yang santai tapi profesional. Pertanyaan: ${prompt}` }] }]
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Gagal menghubungi Gemini. Cek API Key Anda.');
                     }
-                });
-            };
 
-            // Update quantity for per-unit items
-            const updateItemQty = (id, delta) => {
-                setCart(prev => prev.map(item => {
-                    if (item.id === id) {
-                        return { ...item, quantity: Math.max(1, item.quantity + delta) };
-                    }
-                    return item;
-                }));
-            };
-
-            const toggleAddOn = (id) => {
-                setSelectedAddOns(prev => prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id]);
-            };
-
-            const formatCurrency = (val) => {
-                if (lang === 'id') {
-                    return `Rp ${(val / 1000).toLocaleString()}k`;
-                } else {
-                    return `$${val.toLocaleString()}`;
+                    const data = await response.json();
+                    const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    setAiChatResponse(textResponse || "Maaf, saya tidak mengerti.");
+                } catch (error) {
+                    setAiChatResponse("Error: " + error.message);
+                } finally {
+                    setIsAiLoading(false);
                 }
             };
 
-            const calculateTotal = () => {
-                const itemsTotal = cart.reduce((sum, item) => {
-                    const price = item.price[lang];
-                    const qty = item.isPerUnit ? item.quantity : 1;
-                    return sum + (price * qty);
-                }, 0);
-                
-                const addonsTotal = selectedAddOns.reduce((acc, id) => {
-                    const item = addOnsList.find(a => a.id === id);
-                    return acc + (item?.price[lang] || 0);
-                }, 0);
-
-                return itemsTotal + addonsTotal;
+            // --- FUNGSI AUTO NUMBER ---
+            const getInitials = (name) => {
+                if (!name) return 'CLI';
+                const words = name.trim().split(/\s+/);
+                if (words.length === 0) return 'CLI';
+                let initials = words.map(word => word[0].toUpperCase()).join('').slice(0, 3);
+                return initials;
             };
 
-            const handleOrder = () => {
-                const itemsList = cart.map(item => {
-                    const qty = item.isPerUnit ? ` (${item.quantity} ${item.unitName[lang]})` : '';
-                    return `- ${item.name}${qty}`;
-                }).join('\n');
+            const getDateFormat = (dateString) => {
+                if (!dateString) return '';
+                return dateString.replaceAll('-', '');
+            };
 
-                const addOnNames = selectedAddOns.map(id => addOnsList.find(a => a.id === id).name[lang]).join(', ');
-                const totalInvest = formatCurrency(calculateTotal());
+            const getMonthKey = (dateString) => {
+                if (!dateString) return new Date().toISOString().slice(0, 7);
+                return dateString.slice(0, 7);
+            };
+
+            const generateDocNumber = (currentType, currentName, currentDate, counters) => {
+                const prefix = currentType === 'quotation' ? 'QT' : 'INV';
+                const initials = getInitials(currentName);
+                const dateStr = getDateFormat(currentDate);
                 
-                const intro = lang === 'id' ? 'Halo Meramu! Saya tertarik dengan paket:' : 'Hi Meramu! I am interested in:';
-                const addonsText = addOnNames ? `\nAdd-ons: ${addOnNames}` : '';
-                const totalText = lang === 'id' ? 'Total Estimasi' : 'Total Estimate';
+                const monthKey = getMonthKey(currentDate);
+                const currentCounter = counters[monthKey] || 1;
+                const counterStr = String(currentCounter).padStart(3, '0');
                 
-                const text = `${intro}\n${itemsList}${addonsText}\n\n${totalText}: ${totalInvest}`;
-                window.open(`https://wa.me/6285161230219?text=${encodeURIComponent(text)}`, '_blank');
+                return `${prefix}-MM-${initials}${dateStr}-${counterStr}`;
+            };
+
+            React.useEffect(() => {
+                const newNumber = generateDocNumber(docType, quotationData.clientName, quotationData.date, monthlyCounters);
+                setQuotationData(prev => ({ ...prev, number: newNumber }));
+            }, [docType, quotationData.clientName, quotationData.date, monthlyCounters]);
+
+
+            // Kalkulasi
+            const subtotal = items.reduce((acc, item) => acc + (item.qty * item.price), 0);
+            const discountAmount = (subtotal * discountPercent) / 100;
+            const taxableAmount = subtotal - discountAmount;
+            const taxAmount = (taxableAmount * taxPercent) / 100;
+            const grandTotal = taxableAmount + taxAmount;
+            const dpAmount = isDpManual ? manualDp : grandTotal * 0.5;
+            const remainingAmount = grandTotal - dpAmount;
+
+            const getDocTitle = (type) => {
+                switch(type) {
+                    case 'invoice_dp': return { main: 'INVOICE (DP)', sub: 'Tagihan Uang Muka' };
+                    case 'invoice_final': return { main: 'INVOICE', sub: 'Tagihan Pelunasan' };
+                    case 'invoice_full': return { main: 'INVOICE', sub: 'Tagihan Lunas (100%)' }; // New
+                    default: return { main: 'QUOTATION', sub: 'Proposal Penawaran' };
+                }
+            }
+
+            const formatIDR = (amount) => {
+                return new Intl.NumberFormat('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR',
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                }).format(amount);
+            };
+
+            const handleItemChange = (id, field, value) => {
+                setItems(items.map(item => 
+                    item.id === id ? { ...item, [field]: value } : item
+                ));
+            };
+
+            const addItem = () => {
+                const newId = items.length > 0 ? Math.max(...items.map(i => i.id)) + 1 : 1;
+                setItems([...items, { id: newId, description: 'Additional Scope', qty: 1, price: 0 }]);
+            };
+
+            const removeItem = (id) => {
+                setItems(items.filter(item => item.id !== id));
+            };
+
+            const handlePrint = () => {
+                window.print();
+            };
+
+            const handleSaveJpeg = async () => {
+                const element = document.getElementById('quotation-paper');
+                if (!element) return;
+                try {
+                    const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                    const link = document.createElement('a');
+                    link.download = `${quotationData.number || 'Dokumen'}.jpg`;
+                    link.href = canvas.toDataURL('image/jpeg', 0.9);
+                    link.click();
+                } catch (err) {
+                    alert("Maaf, terjadi kesalahan saat menyimpan gambar.");
+                }
+            };
+
+            const handleSaveToHistory = () => {
+                const newEntry = {
+                    id: Date.now(),
+                    saveDate: new Date().toLocaleString('id-ID'),
+                    docType,
+                    quotationData,
+                    items,
+                    discountPercent,
+                    taxPercent,
+                    isDpManual,
+                    manualDp,
+                    grandTotal
+                };
+                
+                const updatedHistory = [newEntry, ...savedHistory];
+                setSavedHistory(updatedHistory);
+                localStorage.setItem('invoiceHistory', JSON.stringify(updatedHistory));
+                
+                const monthKey = getMonthKey(quotationData.date);
+                const currentMonthCounter = monthlyCounters[monthKey] || 1;
+                const nextCounter = currentMonthCounter + 1;
+                
+                const updatedCounters = {
+                    ...monthlyCounters,
+                    [monthKey]: nextCounter
+                };
+                
+                setMonthlyCounters(updatedCounters);
+                localStorage.setItem('monthlyCounters', JSON.stringify(updatedCounters));
+
+                setSaveStatus('saved');
+                setTimeout(() => setSaveStatus(null), 2000);
+            };
+
+            const handleLoadFromHistory = (entry) => {
+                if (window.confirm('Dokumen saat ini akan tertimpa dengan data yang dipilih. Lanjutkan?')) {
+                    setDocType(entry.docType);
+                    setQuotationData(entry.quotationData);
+                    setItems(entry.items);
+                    setDiscountPercent(entry.discountPercent);
+                    setTaxPercent(entry.taxPercent);
+                    setIsDpManual(entry.isDpManual || false);
+                    setManualDp(entry.manualDp || 0);
+                    setShowHistory(false);
+                }
+            };
+
+            const handleDeleteHistory = (id, e) => {
+                e.stopPropagation();
+                if (window.confirm('Hapus item riwayat ini?')) {
+                    const updatedHistory = savedHistory.filter(item => item.id !== id);
+                    setSavedHistory(updatedHistory);
+                    localStorage.setItem('invoiceHistory', JSON.stringify(updatedHistory));
+                }
+            };
+
+            const handleCopyText = (text) => {
+                navigator.clipboard.writeText(text);
+                alert("Teks berhasil disalin!");
+            };
+
+            const generateReplyTemplate = (type) => {
+                let template = "";
+                if (type === 'nego') {
+                    template = `Halo [Nama Klien],\n\nTerima kasih atas penawarannya. Saya sangat tertarik untuk membantu project ini.\n\nMengenai budget, untuk scope pekerjaan yang diminta (termasuk A, B, C), harga yang saya ajukan di angka Rp [Harga Awal] sudah merupakan estimasi terbaik saya untuk memastikan kualitas hasil maksimal.\n\nNamun, jika budget memang terbatas di angka Rp [Harga Nego], mungkin kita bisa sesuaikan scope-nya, misalnya dengan mengurangi [Scope X] atau [Scope Y].\n\nBagaimana menurut Anda? Mari kita diskusikan solusinya.\n\nSalam,\n${quotationData.senderName}`;
+                } else if (type === 'invoice') {
+                    template = `Halo [Nama Klien],\n\nSemoga hari Anda menyenangkan.\n\nBerikut saya lampirkan Invoice untuk termin [DP/Pelunasan] project [Nama Project].\n\nMohon dapat diproses pembayarannya ke rekening yang tertera di invoice agar pengerjaan/pengiriman file final dapat segera dilakukan.\n\nTerima kasih banyak atas kerjasamanya.\n\nSalam,\n${quotationData.senderName}`;
+                } else if (type === 'dp') {
+                    template = `Halo [Nama Klien],\n\nTerima kasih sudah mempercayakan project ini kepada saya.\n\nSesuai kesepakatan, saya akan mulai mengerjakan tahap awal setelah Down Payment (DP) sebesar ${formatIDR(dpAmount)} diterima. Berikut saya lampirkan Invoice DP-nya.\n\nSegera kabari jika transfer sudah dilakukan ya, supaya bisa langsung saya jadwalkan pengerjaannya.\n\nTerima kasih!\n\nSalam,\n${quotationData.senderName}`;
+                } else if (type === 'pricelist') {
+                    template = `Halo [Nama Klien],\n\nThanks for reaching out! Senang sekali bisa terhubung dengan Anda.\n\nMenjawab inquiry Anda, berikut saya lampirkan Quotation/Pricelist untuk kebutuhan project tersebut. Silakan dipelajari terlebih dahulu detail scope dan harganya.\n\nJangan ragu untuk diskusi ya, karena harga yang tertera masih bisa kita sesuaikan (negotiable) bergantung pada kebutuhan spesifik atau budget yang Anda miliki.\n\nDitunggu kabar baiknya!\n\nSalam,\n${quotationData.senderName}`;
+                }
+                setAiResult({ type: 'text', content: template });
             };
 
             return (
-                <div className="min-h-screen selection:bg-meramu-green selection:text-white pb-32 lg:pb-20">
-                    {/* Header */}
-                    <nav className="fixed top-0 w-full z-50 px-6 md:px-8 py-6 flex justify-between items-center border-b border-white/5 bg-meramu-dark/90 backdrop-blur-md transition-all duration-300">
-                        <span className="text-xl font-semibold tracking-tighter cursor-pointer" onClick={() => window.scrollTo(0,0)}>MERAMU<span className="text-meramu-green">.</span></span>
-                        <div className="flex items-center gap-4 md:gap-8">
-                            <button 
-                                onClick={() => setLang(lang === 'id' ? 'en' : 'id')}
-                                className="text-[10px] font-bold bg-white/5 px-3 py-1 rounded-md border border-white/10 hover:bg-meramu-green transition-colors"
-                            >
-                                {lang === 'id' ? 'ID' : 'EN'}
-                            </button>
-                            <a href="https://instagram.com/meramu.studio" target="_blank" className="text-[10px] uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity hidden md:block">Instagram</a>
-                            <button 
-                                onClick={() => window.open('https://wa.me/6285161230219?text=Hi%20Meramu%20Studio!%20I%20want%20to%20start%20a%20new%20project.', '_blank')}
-                                className="text-[10px] uppercase tracking-widest px-6 py-2 border border-white/10 rounded-full hover:bg-meramu-cream hover:text-meramu-dark transition-all hidden md:block"
-                            >
-                                {lang === 'id' ? 'Bangun Projek' : 'Build Project'}
-                            </button>
+                <div className="min-h-screen bg-meramu-cream p-4 md:p-8 font-sans print:bg-white print:p-0">
+                
+                {/* Control Panel */}
+                <div className="max-w-4xl mx-auto mb-6 bg-[#FAF9F6] p-4 rounded-lg shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between no-print border border-[#D8D4C9]">
+                    <div className="flex flex-col gap-2 w-full md:w-auto">
+                        <div className="flex items-center gap-2 text-meramu-dark">
+                            <FileText size={20} />
+                            <span className="font-semibold">Jenis Dokumen:</span>
                         </div>
-                    </nav>
-
-                    {/* Hero */}
-                    <header className="pt-32 md:pt-40 pb-12 px-8 max-w-5xl mx-auto text-center">
-                        <h1 className="text-4xl md:text-6xl font-light tracking-tight mb-4 animate-fade-in leading-[1.1]">
-                            {t.hero.title1} <span className="text-meramu-green italic font-serif">{t.hero.accent}</span> <br/>{t.hero.title2}
-                        </h1>
-                    </header>
-
-                    {/* Navigation */}
-                    <div className="max-w-6xl mx-auto px-4 md:px-8 mb-16 animate-fade-in">
-                        <div className="flex flex-nowrap md:flex-wrap overflow-x-auto pb-4 md:pb-0 gap-3 no-scrollbar justify-start md:justify-center">
-                            {Object.keys(packagesData).map(key => (
+                        <div className="flex bg-meramu-cream rounded-lg p-1 gap-1 w-full md:w-auto">
+                            {['quotation', 'invoice_dp', 'invoice_final', 'invoice_full'].map(type => (
                                 <button 
-                                    key={key} 
-                                    onClick={() => setActiveTab(key)}
-                                    className={`flex-shrink-0 px-6 py-3 rounded-2xl text-[10px] uppercase tracking-widest transition-all border ${activeTab === key ? 'bg-meramu-cream text-meramu-dark border-transparent font-bold shadow-[0_0_20px_rgba(254,245,218,0.3)]' : 'glass-card text-white/40 border-white/5 hover:border-white/20'}`}
+                                    key={type}
+                                    onClick={() => setDocType(type)}
+                                    className={`flex-1 md:flex-none px-3 py-1 text-xs font-medium rounded-md transition-all ${docType === type ? 'bg-meramu-green text-white shadow' : 'text-meramu-dark hover:bg-white'}`}
                                 >
-                                    {t.tabs[key]}
+                                    {type === 'quotation' ? 'Quotation' : type === 'invoice_dp' ? 'Invoice DP' : type === 'invoice_final' ? 'Pelunasan' : 'Full 100%'}
                                 </button>
                             ))}
                         </div>
-                        <div className="mt-4 flex justify-center">
-                            <button 
-                                onClick={() => setIsUmkmModal(true)}
-                                className="px-10 py-3 rounded-2xl text-[9px] uppercase tracking-widest border border-meramu-green/30 text-meramu-green hover:bg-meramu-green/10 transition-all font-medium"
-                            >
-                                {t.msmeBtn}
-                            </button>
-                        </div>
                     </div>
+                    
+                    <div className="flex flex-wrap gap-2 w-full md:w-auto justify-end">
+                        <button 
+                            onClick={() => setShowAI(true)}
+                            className="flex items-center gap-2 bg-white border border-meramu-green text-meramu-green px-3 py-2 rounded-lg hover:bg-green-50 transition-colors text-sm font-bold cursor-pointer shadow-sm"
+                        >
+                            <MessageSquare size={16} />
+                            <span className="hidden sm:inline">Asisten AI</span>
+                        </button>
 
-                    <main className="max-w-7xl mx-auto px-6 md:px-8 grid grid-cols-1 lg:grid-cols-12 gap-16">
-                        <div className="lg:col-span-8 animate-slide-up">
-                            <div className="flex justify-between items-end mb-8 border-b border-white/5 pb-4">
-                                <h2 className="text-sm font-light uppercase tracking-[0.3em] text-meramu-green">{packagesData[activeTab].title[lang]}</h2>
-                                <span className="text-[10px] opacity-30 italic">Est. {packagesData[activeTab].timeline[lang]}</span>
+                        <button 
+                            onClick={() => setShowHistory(true)}
+                            className="flex items-center gap-2 bg-white border border-[#D1D8C6] text-meramu-dark px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium cursor-pointer"
+                        >
+                            <History size={16} />
+                            <span className="hidden sm:inline">Riwayat</span>
+                        </button>
+                        
+                        <button 
+                            onClick={handleSaveToHistory}
+                            className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm font-medium cursor-pointer border ${saveStatus === 'saved' ? 'bg-green-100 border-green-200 text-green-700' : 'bg-white border-[#D1D8C6] text-meramu-dark hover:bg-gray-50'}`}
+                        >
+                            {saveStatus === 'saved' ? <Check size={16} /> : <Save size={16} />}
+                            <span className="hidden sm:inline">{saveStatus === 'saved' ? 'Tersimpan' : 'Simpan'}</span>
+                        </button>
+
+                        <button 
+                            onClick={handleSaveJpeg}
+                            className="flex items-center gap-2 bg-[#D1D8C6] text-meramu-dark px-3 py-2 rounded-lg hover:bg-[#C2CBB5] transition-colors text-sm font-medium cursor-pointer"
+                        >
+                            <ImageIcon size={16} />
+                            <span className="hidden sm:inline">Simpan JPG</span>
+                        </button>
+                        <button 
+                            onClick={handlePrint}
+                            className="flex items-center gap-2 bg-meramu-green text-white px-4 py-2 rounded-lg hover:bg-[#407558] transition-colors text-sm font-medium shadow-sm cursor-pointer"
+                        >
+                            <Printer size={16} />
+                            <span className="hidden sm:inline">Cetak</span>
+                        </button>
+                    </div>
+                </div>
+
+                {/* MODAL AI & TEMPLATE */}
+                {showAI && (
+                    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 no-print">
+                        <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg flex flex-col overflow-hidden h-[80vh] max-h-[600px]">
+                            <div className="p-4 bg-meramu-green text-white flex justify-between items-center">
+                                <h2 className="text-lg font-bold flex items-center gap-2">
+                                    <Sparkles size={20} className="text-yellow-300" /> 
+                                    Asisten & Template
+                                </h2>
+                                <button onClick={() => setShowAI(false)} className="text-white/80 hover:text-white">
+                                    <X size={20} />
+                                </button>
+                            </div>
+                            
+                            <div className="flex border-b border-gray-100">
+                                <button 
+                                    onClick={() => { setAiTab('reply'); setAiResult(null); }}
+                                    className={`flex-1 py-3 text-sm font-medium ${aiTab === 'reply' ? 'text-meramu-green border-b-2 border-meramu-green bg-green-50' : 'text-gray-500 hover:bg-gray-50'}`}
+                                >
+                                    💬 Template Balasan
+                                </button>
+                                <button 
+                                    onClick={() => { setAiTab('consult'); }}
+                                    className={`flex-1 py-3 text-sm font-medium ${aiTab === 'consult' ? 'text-meramu-green border-b-2 border-meramu-green bg-green-50' : 'text-gray-500 hover:bg-gray-50'}`}
+                                >
+                                    🤖 Konsultasi AI
+                                </button>
                             </div>
 
-                            <div className="space-y-16">
-                                {packagesData[activeTab].sections ? (
-                                    packagesData[activeTab].sections.map((section, idx) => (
-                                        <div key={idx} className="space-y-6">
-                                            <div className="flex items-center gap-4">
-                                                <h3 className="text-xl md:text-2xl font-serif text-meramu-cream/90">{section.subTitle[lang]}</h3>
-                                                <div className="h-px bg-white/10 flex-grow"></div>
-                                            </div>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                {section.items.map(pkg => (
-                                                    <PackageCard 
-                                                        key={pkg.id} 
-                                                        pkg={pkg} 
-                                                        cart={cart}
-                                                        togglePackage={togglePackage}
-                                                        lang={lang} 
-                                                        formatCurrency={formatCurrency} 
-                                                    />
-                                                ))}
-                                            </div>
+                            <div className="p-6 bg-[#FEFCF8] flex-1 overflow-y-auto">
+                                {/* TAB 1: TEMPLATE BALASAN */}
+                                {aiTab === 'reply' && (
+                                    <div className="space-y-4">
+                                        <p className="text-sm text-gray-600">Pilih template pesan untuk klien:</p>
+                                        <div className="grid grid-cols-1 gap-2">
+                                            <button onClick={() => generateReplyTemplate('pricelist')} className="text-left p-3 border rounded-lg bg-green-50 border-meramu-green hover:bg-meramu-cream transition-colors text-sm text-meramu-dark font-medium">
+                                                📧 Kirim Pricelist & Nego
+                                            </button>
+                                            <button onClick={() => generateReplyTemplate('nego')} className="text-left p-3 border rounded-lg hover:bg-meramu-cream hover:border-meramu-green transition-colors text-sm text-meramu-dark font-medium">
+                                                📉 Menanggapi Nego Harga
+                                            </button>
+                                            <button onClick={() => generateReplyTemplate('dp')} className="text-left p-3 border rounded-lg hover:bg-meramu-cream hover:border-meramu-green transition-colors text-sm text-meramu-dark font-medium">
+                                                💸 Menagih DP (Awal Project)
+                                            </button>
+                                            <button onClick={() => generateReplyTemplate('invoice')} className="text-left p-3 border rounded-lg hover:bg-meramu-cream hover:border-meramu-green transition-colors text-sm text-meramu-dark font-medium">
+                                                ✅ Mengirim Invoice Pelunasan
+                                            </button>
                                         </div>
-                                    ))
-                                ) : (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        {packagesData[activeTab].items.map(pkg => (
-                                            <PackageCard 
-                                                key={pkg.id} 
-                                                pkg={pkg} 
-                                                cart={cart}
-                                                togglePackage={togglePackage}
-                                                lang={lang} 
-                                                formatCurrency={formatCurrency} 
+
+                                        {aiResult && (
+                                            <div className="mt-4 bg-white border border-dashed border-meramu-green rounded-lg p-4 relative animate-fade-in">
+                                                <div className="absolute top-2 right-2">
+                                                    <button onClick={() => handleCopyText(aiResult.content)} className="text-meramu-green hover:bg-green-50 p-1.5 rounded" title="Salin Teks">
+                                                        <Copy size={16} />
+                                                    </button>
+                                                </div>
+                                                <h4 className="text-xs font-bold text-meramu-green uppercase mb-2">Draft Pesan:</h4>
+                                                <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+                                                    {aiResult.content}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* TAB 2: KONSULTASI AI (DIRECT CHAT) */}
+                                {aiTab === 'consult' && (
+                                    <div className="space-y-4 h-full flex flex-col">
+                                        <div className="flex-1 overflow-y-auto bg-white border border-[#D1D8C6] rounded-lg p-3 min-h-[200px]">
+                                            {!aiChatResponse ? (
+                                                <div className="text-center text-gray-400 text-sm py-10">
+                                                    <p>Tanyakan apa saja ke Gemini!</p>
+                                                    <p className="text-xs">"Berapa harga pasaran desain logo?"</p>
+                                                </div>
+                                            ) : (
+                                                <div className="text-sm text-gray-700 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: marked.parse(aiChatResponse) }}></div>
+                                            )}
+                                            {isAiLoading && (
+                                                <div className="text-center py-2">
+                                                    <span className="inline-block animate-bounce text-meramu-green">●</span>
+                                                    <span className="inline-block animate-bounce delay-100 text-meramu-green">●</span>
+                                                    <span className="inline-block animate-bounce delay-200 text-meramu-green">●</span>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="flex gap-2 mt-2">
+                                            <input 
+                                                value={chatInput}
+                                                onChange={(e) => setChatInput(e.target.value)}
+                                                onKeyDown={(e) => e.key === 'Enter' && callGeminiChat()}
+                                                placeholder="Ketik pertanyaanmu..."
+                                                className="flex-1 p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-meramu-green"
+                                                disabled={isAiLoading}
                                             />
+                                            <button 
+                                                onClick={callGeminiChat}
+                                                disabled={isAiLoading || !userApiKey}
+                                                className={`p-2 rounded-lg text-white transition-colors ${isAiLoading || !userApiKey ? 'bg-gray-300 cursor-not-allowed' : 'bg-meramu-green hover:bg-[#407558]'}`}
+                                            >
+                                                <Send size={18} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* MODAL RIWAYAT */}
+                {showHistory && (
+                    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 no-print">
+                        <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
+                            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-[#FAF9F6] rounded-t-xl">
+                                <h2 className="text-lg font-bold text-meramu-dark flex items-center gap-2">
+                                    <History size={20} /> Riwayat Dokumen
+                                </h2>
+                                <button onClick={() => setShowHistory(false)} className="text-gray-400 hover:text-gray-600">
+                                    <X size={20} />
+                                </button>
+                            </div>
+                            
+                            <div className="overflow-y-auto p-4 custom-scrollbar flex-1 bg-[#FEFCF8]">
+                                {savedHistory.length === 0 ? (
+                                    <div className="text-center py-10 text-gray-400">
+                                        <p>Belum ada riwayat tersimpan.</p>
+                                        <p className="text-xs mt-1">Klik tombol "Simpan" untuk menyimpan dokumen.</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {savedHistory.map((item) => (
+                                            <div 
+                                                key={item.id}
+                                                onClick={() => handleLoadFromHistory(item)}
+                                                className="group border border-[#E6E8E0] bg-white p-4 rounded-lg hover:border-meramu-green hover:shadow-sm cursor-pointer transition-all flex justify-between items-center"
+                                            >
+                                                <div>
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded ${
+                                                            item.docType === 'quotation' ? 'bg-blue-100 text-blue-700' :
+                                                            item.docType === 'invoice_dp' ? 'bg-orange-100 text-orange-700' :
+                                                            item.docType === 'invoice_final' ? 'bg-green-100 text-green-700' :
+                                                            'bg-purple-100 text-purple-700' // For invoice_full
+                                                        }`}>
+                                                            {getDocTitle(item.docType).main}
+                                                        </span>
+                                                        <span className="text-xs text-gray-400">{item.saveDate}</span>
+                                                    </div>
+                                                    <h3 className="font-bold text-meramu-dark">{item.quotationData.clientName}</h3>
+                                                    <p className="text-xs text-[#6B786D]">{item.quotationData.number} • {formatIDR(item.grandTotal)}</p>
+                                                </div>
+                                                <button 
+                                                    onClick={(e) => handleDeleteHistory(item.id, e)}
+                                                    className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                                                    title="Hapus dari riwayat"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </div>
                                         ))}
                                     </div>
                                 )}
                             </div>
-
-                            <div className="mt-20 grid grid-cols-1 md:grid-cols-2 gap-12 pt-12 border-t border-white/5">
-                                <div>
-                                    <h4 className="text-[10px] font-semibold uppercase tracking-widest text-meramu-green mb-6">{t.tc.title}</h4>
-                                    <ul className="text-[10px] space-y-4 opacity-40 font-light leading-relaxed">
-                                        <li>• {lang === 'id' ? 'DP 50% di awal sebagai tanda jadi.' : '50% Down Payment to start.'}</li>
-                                        <li>• {lang === 'id' ? 'Pelunasan sebelum penyerahan file final.' : 'Final payment before file delivery.'}</li>
-                                        <li>• {lang === 'id' ? 'Hak cipta penuh milik klien setelah pelunasan.' : 'Full copyright ownership after final payment.'}</li>
-                                    </ul>
-                                </div>
-                                <div>
-                                    <h4 className="text-[10px] font-semibold uppercase tracking-widest text-meramu-green mb-6">{t.tc.flow}</h4>
-                                    <div className="space-y-4 text-[10px] opacity-40 font-light">
-                                        <p>1. Briefing & Moodboard Analysis</p>
-                                        <p>2. Concept & Visual Development</p>
-                                        <p>3. Review & Feedback</p>
-                                        <p>4. Finalizing & Delivery</p>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
+                    </div>
+                )}
 
-                        {/* Sidebar Desktop */}
-                        <aside className="hidden lg:block lg:col-span-4 lg:sticky lg:top-32 h-fit">
-                            <div className="p-8 rounded-[2.5rem] bg-meramu-cream text-meramu-dark shadow-2xl relative overflow-hidden group min-h-[400px] flex flex-col">
-                                <div className="absolute top-0 right-0 w-40 h-40 bg-white/30 rounded-full blur-3xl group-hover:bg-meramu-green/20 transition-all duration-700 pointer-events-none"></div>
-                                <h3 className="text-[10px] font-bold uppercase tracking-widest mb-6 text-meramu-green flex items-center justify-between">
-                                    {t.sidebar.title}
-                                    <span className="bg-meramu-dark text-white w-5 h-5 rounded-full flex items-center justify-center text-[9px]">{cart.length}</span>
-                                </h3>
-                                
-                                {/* Cart Items List */}
-                                <div className="flex-grow space-y-3 mb-8 custom-scroll overflow-y-auto max-h-[300px] pr-2">
-                                    {cart.length === 0 ? (
-                                        <div className="text-center py-10 opacity-30 text-xs italic border-2 border-dashed border-black/10 rounded-xl">
-                                            {t.sidebar.empty}
-                                        </div>
-                                    ) : (
-                                        cart.map(item => (
-                                            <div key={item.id} className="bg-white/50 p-4 rounded-xl border border-black/5 animate-fade-in">
-                                                <div className="flex justify-between items-start mb-2">
-                                                    <span className="text-[10px] font-bold uppercase tracking-wide w-2/3 leading-tight">{item.name}</span>
-                                                    <span className="text-[10px] font-medium opacity-60">
-                                                        {formatCurrency(item.price[lang] * (item.isPerUnit ? item.quantity : 1))}
-                                                    </span>
-                                                </div>
-                                                
-                                                {item.isPerUnit && (
-                                                    <div className="flex items-center gap-3 mt-2 bg-meramu-dark/5 rounded-lg p-1 w-fit">
-                                                        <button onClick={(e) => {e.stopPropagation(); updateItemQty(item.id, -1)}} className="w-5 h-5 flex items-center justify-center hover:bg-white rounded text-xs">-</button>
-                                                        <span className="text-[9px] font-bold w-4 text-center">{item.quantity}</span>
-                                                        <button onClick={(e) => {e.stopPropagation(); updateItemQty(item.id, 1)}} className="w-5 h-5 flex items-center justify-center hover:bg-white rounded text-xs">+</button>
-                                                        <span className="text-[8px] opacity-40 uppercase ml-1">{item.unitName[lang]}</span>
-                                                    </div>
-                                                )}
-                                                {!item.isPerUnit && <div className="text-[8px] opacity-40">Single Package</div>}
-                                            </div>
-                                        ))
-                                    )}
-                                </div>
-
-                                <div className="space-y-3 mb-8 border-t border-black/10 pt-6">
-                                    <p className="text-[9px] uppercase tracking-widest opacity-50 mb-2 font-semibold">{t.sidebar.addons}</p>
-                                    {addOnsList.map(item => (
-                                        <div 
-                                            key={item.id} 
-                                            onClick={() => toggleAddOn(item.id)}
-                                            className={`p-4 rounded-xl border cursor-pointer transition-all flex justify-between items-center ${selectedAddOns.includes(item.id) ? 'bg-meramu-green text-white border-transparent shadow-lg' : 'bg-white/40 border-black/5 hover:bg-white/60'}`}
-                                        >
-                                            <span className="text-[9px] font-bold">{item.name[lang]}</span>
-                                            <span className="text-[9px] opacity-70 font-medium">+{formatCurrency(item.price[lang])}</span>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                <div className="pt-6 border-t border-black/10 mt-auto">
-                                    <div className="flex justify-between items-end mb-6">
-                                        <span className="text-[9px] uppercase tracking-widest opacity-50 font-bold">{t.sidebar.total}</span>
-                                        <span className="text-3xl font-light tracking-tighter text-meramu-dark">{formatCurrency(calculateTotal())}</span>
-                                    </div>
-                                    <button 
-                                        disabled={cart.length === 0}
-                                        onClick={handleOrder}
-                                        className="w-full py-4 rounded-full bg-meramu-dark text-meramu-cream font-bold text-[10px] uppercase tracking-widest hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl"
-                                    >
-                                        {t.sidebar.cta}
-                                    </button>
-                                </div>
-                            </div>
-                        </aside>
-                    </main>
+                {/* Kertas Quotation */}
+                <div id="quotation-paper" className="max-w-4xl mx-auto bg-white shadow-xl rounded-none md:rounded-lg overflow-hidden print:shadow-none print:w-full print:max-w-full print:bg-white">
                     
-                    {/* Mobile Floating Bar */}
-                    <div className="fixed bottom-0 left-0 w-full p-4 lg:hidden z-40">
-                        <div className="glass-bar p-5 rounded-3xl shadow-2xl flex justify-between items-center text-white">
-                            <div>
-                                <div className="flex items-center gap-2 mb-1">
-                                    <p className="text-[9px] uppercase tracking-widest opacity-60">{t.mobileBar.total}</p>
-                                    <span className="bg-meramu-green text-white text-[8px] px-1.5 py-0.5 rounded-full">{cart.length} items</span>
-                                </div>
-                                <p className="text-2xl font-medium tracking-tight text-meramu-green">{formatCurrency(calculateTotal())}</p>
-                            </div>
-                            <button 
-                                disabled={cart.length === 0}
-                                onClick={handleOrder}
-                                className="px-8 py-3 rounded-xl bg-meramu-cream text-meramu-dark font-bold text-[10px] uppercase tracking-widest disabled:opacity-50"
-                            >
-                                {t.mobileBar.cta}
-                            </button>
+                    {/* Header Warna Sage Baru */}
+                    <div className="bg-meramu-green text-white p-10 print:bg-meramu-green print:text-white print-color-adjust-exact">
+                    <div className="flex justify-between items-start">
+                        <div>
+                        <h1 className="text-3xl font-bold tracking-wider uppercase mb-1 text-[#F2EFE5]">{getDocTitle(docType).main}</h1>
+                        <p className="opacity-80 text-sm tracking-widest uppercase text-[#D8DCC8]">{getDocTitle(docType).sub}</p>
+                        </div>
+                        <div className="text-right w-1/2">
+                        <div className="flex items-center justify-end gap-3 mb-2">
+                             <input 
+                                type="text" 
+                                value={quotationData.senderName}
+                                onChange={(e) => setQuotationData({...quotationData, senderName: e.target.value})}
+                                className="bg-transparent text-right font-bold text-2xl w-full focus:outline-none placeholder-[#A9B388] text-[#F2EFE5]"
+                                placeholder="Nama Perusahaan Anda"
+                            />
+                        </div>
+                        <textarea 
+                            value={quotationData.senderAddress}
+                            onChange={(e) => setQuotationData({...quotationData, senderAddress: e.target.value})}
+                            className="bg-transparent text-right w-full text-sm opacity-90 focus:outline-none resize-none h-16 text-[#E6E8D8] leading-relaxed"
+                            placeholder="Alamat Lengkap"
+                        />
+                        </div>
+                    </div>
+                    </div>
+
+                    {/* Info Detail */}
+                    <div className="p-10">
+                    <div className="flex flex-col md:flex-row justify-between gap-10 mb-12">
+                        <div className="w-full md:w-1/2">
+                        <h3 className="text-meramu-green text-xs font-bold uppercase tracking-widest mb-3">Ditujukan Kepada (Client)</h3>
+                        <input 
+                            type="text" 
+                            value={quotationData.clientName}
+                            onChange={(e) => setQuotationData({...quotationData, clientName: e.target.value})}
+                            className="block w-full text-xl font-bold text-meramu-dark mb-2 border-b border-transparent hover:border-[#D1D8C6] focus:border-meramu-green focus:outline-none transition-colors"
+                            placeholder="Nama Klien"
+                        />
+                        <textarea 
+                            value={quotationData.clientAddress}
+                            onChange={(e) => setQuotationData({...quotationData, clientAddress: e.target.value})}
+                            className="block w-full text-[#6B786D] resize-none h-20 border-b border-transparent hover:border-[#D1D8C6] focus:border-meramu-green focus:outline-none transition-colors leading-relaxed"
+                            placeholder="Alamat Klien"
+                        />
+                        </div>
+                        <div className="w-full md:w-5/12 space-y-4">
+                        <div className="flex justify-between items-center border-b border-[#EFECE5] pb-2">
+                            <span className="text-[#6B786D] text-sm font-medium">No. Dokumen</span>
+                            <input 
+                            type="text" 
+                            value={quotationData.number}
+                            readOnly
+                            className="text-right font-bold text-meramu-dark w-full bg-transparent focus:outline-none"
+                            title="Nomor dokumen dibuat otomatis"
+                            />
+                        </div>
+                        <div className="flex justify-between items-center border-b border-[#EFECE5] pb-2">
+                            <span className="text-[#6B786D] text-sm font-medium">Tanggal</span>
+                            <input 
+                            type="date" 
+                            value={quotationData.date}
+                            onChange={(e) => setQuotationData({...quotationData, date: e.target.value})}
+                            className="text-right font-medium text-meramu-dark focus:outline-none"
+                            />
+                        </div>
+                        <div className="flex justify-between items-center border-b border-[#EFECE5] pb-2">
+                            <span className="text-[#6B786D] text-sm font-medium">
+                                {docType === 'quotation' ? 'Berlaku Sampai' : 'Jatuh Tempo'}
+                            </span>
+                            <input 
+                            type="date" 
+                            value={quotationData.dueDate}
+                            onChange={(e) => setQuotationData({...quotationData, dueDate: e.target.value})}
+                            className="text-right font-medium text-meramu-dark focus:outline-none"
+                            />
+                        </div>
                         </div>
                     </div>
 
-                    {/* Back to Top Button */}
+                    {/* Tabel Item */}
+                    <table className="w-full mb-8">
+                        <thead>
+                        <tr className="bg-[#F2F4ED] border-y border-[#E6E8E0]">
+                            <th className="text-left py-4 px-3 text-xs font-bold text-meramu-green uppercase tracking-widest w-1/2">Lingkup Pekerjaan (Scope)</th>
+                            <th className="text-center py-4 px-3 text-xs font-bold text-meramu-green uppercase tracking-widest w-20">Qty</th>
+                            <th className="text-right py-4 px-3 text-xs font-bold text-meramu-green uppercase tracking-widest w-36">Harga</th>
+                            <th className="text-right py-4 px-3 text-xs font-bold text-meramu-green uppercase tracking-widest w-40">Total</th>
+                            <th className="w-10 no-print"></th>
+                        </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#F2F4ED]">
+                        {items.map((item) => (
+                            <tr key={item.id} className="group hover:bg-[#F9FBF7] transition-colors">
+                            <td className="py-4 px-3 align-top">
+                                <textarea 
+                                value={item.description}
+                                onChange={(e) => handleItemChange(item.id, 'description', e.target.value)}
+                                className="w-full bg-transparent focus:outline-none font-medium text-meramu-dark resize-none h-auto min-h-[1.5rem]"
+                                rows={2}
+                                placeholder="Deskripsi Item"
+                                style={{ height: 'auto', minHeight: '40px' }}
+                                />
+                            </td>
+                            <td className="py-4 px-3 align-top">
+                                <input 
+                                type="number" 
+                                min="1"
+                                value={item.qty}
+                                onChange={(e) => handleItemChange(item.id, 'qty', parseInt(e.target.value) || 0)}
+                                className="w-full text-center bg-transparent focus:outline-none text-[#6B786D] font-medium"
+                                />
+                            </td>
+                            <td className="py-4 px-3 text-right align-top">
+                                <div className="flex items-center justify-end">
+                                    <span className="text-[#A9B388] text-xs mr-2">Rp</span>
+                                    <input 
+                                    type="number" 
+                                    min="0"
+                                    value={item.price}
+                                    onChange={(e) => handleItemChange(item.id, 'price', parseInt(e.target.value) || 0)}
+                                    className="w-28 text-right bg-transparent focus:outline-none text-[#6B786D] font-medium"
+                                    />
+                                </div>
+                            </td>
+                            <td className="py-4 px-3 text-right font-bold text-meramu-dark align-top">
+                                {formatIDR(item.qty * item.price)}
+                            </td>
+                            <td className="py-4 px-3 text-center no-print align-top">
+                                <button 
+                                onClick={() => removeItem(item.id)}
+                                className="text-[#D1D8C6] hover:text-[#B91C1C] transition-colors mt-1 cursor-pointer"
+                                >
+                                <Trash2 size={16} />
+                                </button>
+                            </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+
                     <button 
-                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                        className={`fixed bottom-28 lg:bottom-10 right-6 z-40 w-10 h-10 rounded-full bg-meramu-green/20 border border-meramu-green text-meramu-green flex items-center justify-center transition-all duration-500 hover:bg-meramu-green hover:text-white ${showBackToTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
+                        onClick={addItem}
+                        className="mb-10 flex items-center gap-2 text-meramu-green hover:text-meramu-dark text-sm font-semibold no-print transition-colors cursor-pointer"
                     >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                        <div className="bg-[#F2F4ED] p-1 rounded-full">
+                        <Plus size={14} /> 
+                        </div>
+                        Tambah Item Baru
                     </button>
 
-                    {/* UMKM Modal */}
-                    {isUmkmModal && (
-                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-meramu-dark/95 backdrop-blur-xl">
-                            <div className="w-full max-w-lg p-12 rounded-[3rem] border border-white/5 bg-black/40 relative animate-fade-in">
-                                <button onClick={() => setIsUmkmModal(false)} className="absolute top-10 right-10 opacity-20 hover:opacity-100">✕</button>
-                                <h3 className="text-2xl font-light mb-2 tracking-tight">{t.modal.title}</h3>
-                                <p className="text-[10px] opacity-40 mb-10 italic">{t.modal.desc}</p>
+                    {/* Bagian Total */}
+                    <div className="flex flex-col md:flex-row justify-end border-t-2 border-meramu-green pt-8">
+                        <div className="w-full md:w-1/2 lg:w-5/12 space-y-4">
+                        <div className="flex justify-between items-center text-[#6B786D]">
+                            <span className="font-medium">Subtotal</span>
+                            <span className="font-medium">{formatIDR(subtotal)}</span>
+                        </div>
+                        
+                        <div className="flex justify-between items-center text-[#4A5D4F] bg-[#F2F4ED] p-2 rounded -mx-2">
+                            <div className="flex items-center gap-2">
+                            <span className="font-medium">Diskon</span>
+                            <div className="flex items-center bg-white border border-[#D1D8C6] rounded px-2 py-0.5 no-print shadow-sm">
+                                <input 
+                                type="number" 
+                                min="0" 
+                                max="100"
+                                value={discountPercent}
+                                onChange={(e) => setDiscountPercent(parseInt(e.target.value) || 0)}
+                                className="w-10 text-right focus:outline-none text-sm font-medium text-[#4A5D4F]"
+                                />
+                                <span className="text-xs ml-1">%</span>
+                            </div>
+                            <span className="hidden print:inline text-xs font-medium">({discountPercent}%)</span>
+                            </div>
+                            <span className="font-medium">- {formatIDR(discountAmount)}</span>
+                        </div>
+
+                        <div className="flex justify-between items-center text-[#6B786D]">
+                            <div className="flex items-center gap-2">
+                            <span className="font-medium">Pajak (PPN)</span>
+                            <div className="flex items-center bg-[#F2F4ED] rounded px-2 py-0.5 no-print">
+                                <input 
+                                type="number" 
+                                min="0" 
+                                max="100"
+                                value={taxPercent}
+                                onChange={(e) => setTaxPercent(parseInt(e.target.value) || 0)}
+                                className="w-8 text-right bg-transparent focus:outline-none text-xs"
+                                />
+                                <span className="text-xs ml-1">%</span>
+                            </div>
+                            <span className="hidden print:inline text-xs">({taxPercent}%)</span>
+                            </div>
+                            <span className="font-medium">{formatIDR(taxAmount)}</span>
+                        </div>
+
+                        {/* Grand Total */}
+                        <div className={`flex justify-between items-center pt-4 ${docType === 'invoice_final' ? 'text-[#6B786D] pb-2' : 'border-t border-[#EFECE5] mt-2 text-2xl font-bold text-meramu-dark'}`}>
+                            <span className={docType === 'invoice_final' ? "font-medium" : ""}>
+                                {docType === 'invoice_final' ? 'Total Project' : 'Total'}
+                            </span>
+                            <span>{formatIDR(grandTotal)}</span>
+                        </div>
+
+                        {/* Pengurangan DP (Hanya untuk Invoice Pelunasan) */}
+                        {docType === 'invoice_final' && (
+                            <div className="flex justify-between items-center text-[#B91C1C] bg-red-50 p-2 rounded -mx-2 border border-red-100">
+                                <span className="font-medium">Dikurangi DP (Sudah Dibayar)</span>
+                                <div className="flex items-center justify-end">
+                                    <span className="font-bold mr-1 print:hidden">- Rp</span>
+                                    <input 
+                                        type="number" 
+                                        min="0"
+                                        value={isDpManual ? manualDp : dpAmount}
+                                        onChange={(e) => { setIsDpManual(true); setManualDp(parseInt(e.target.value) || 0); }}
+                                        className="w-28 text-right bg-transparent focus:outline-none font-bold border-b border-[#B91C1C]/30 print:hidden"
+                                    />
+                                    <span className="hidden print:inline font-bold">- {formatIDR(dpAmount)}</span>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Total Tagihan Akhir (Untuk DP, Pelunasan, atau Full) */}
+                        {docType !== 'quotation' && (
+                            <div className="flex justify-between items-center pt-4 border-t-2 border-meramu-green mt-2">
+                                <span className="text-xl md:text-2xl font-bold text-meramu-dark">
+                                    {docType === 'invoice_dp' ? 'Total Tagihan DP' : docType === 'invoice_final' ? 'Sisa Tagihan' : 'Total Tagihan'}
+                                </span>
                                 
-                                <form className="space-y-4" onSubmit={(e) => {
-                                    e.preventDefault();
-                                    const d = new FormData(e.target);
-                                    const text = `Hai Meramu Studio! Nama saya *${d.get('name')}* dari *${d.get('biz')}* (IG: ${d.get('ig')}). Usaha berdiri tahun ${d.get('year')}. Ingin info rate UMKM.`;
-                                    window.open(`https://wa.me/6285161230219?text=${encodeURIComponent(text)}`, '_blank');
-                                }}>
-                                    <input required name="name" placeholder={lang === 'id' ? "Nama Anda" : "Your Name"} className="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 text-[11px] focus:border-meramu-green/40 outline-none transition-colors" />
-                                    <input required name="biz" placeholder={lang === 'id' ? "Nama Usaha" : "Business Name"} className="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 text-[11px] focus:border-meramu-green/40 outline-none transition-colors" />
-                                    <input required name="ig" placeholder="Username IG Bisnis" className="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 text-[11px] focus:border-meramu-green/40 outline-none transition-colors" />
-                                    <input required name="year" placeholder={lang === 'id' ? "Tahun Berdiri" : "Year Established"} className="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 text-[11px] focus:border-meramu-green/40 outline-none transition-colors" />
-                                    <button className="w-full bg-meramu-green text-white py-4 rounded-2xl text-[10px] uppercase tracking-widest font-bold mt-4 shadow-xl shadow-meramu-green/20 hover:bg-meramu-green/90 transition-all">Claim Special Rate</button>
-                                    <button type="button" onClick={() => setIsUmkmModal(false)} className="w-full bg-transparent text-white/40 py-2 rounded-2xl text-[9px] uppercase tracking-widest hover:text-white transition-colors">{t.modal.back}</button>
-                                </form>
+                                {docType === 'invoice_dp' ? (
+                                    <div className="flex items-center justify-end text-meramu-green">
+                                        <span className="text-xl md:text-2xl font-bold mr-2 print:hidden">Rp</span>
+                                        <input 
+                                            type="number" 
+                                            min="0"
+                                            value={isDpManual ? manualDp : dpAmount}
+                                            onChange={(e) => { setIsDpManual(true); setManualDp(parseInt(e.target.value) || 0); }}
+                                            className="w-32 md:w-40 text-right bg-transparent focus:outline-none text-xl md:text-2xl font-bold border-b-2 border-meramu-green/30 print:hidden"
+                                        />
+                                        <span className="hidden print:inline text-xl md:text-2xl font-bold">{formatIDR(dpAmount)}</span>
+                                    </div>
+                                ) : (
+                                    <span className="text-xl md:text-2xl font-bold text-meramu-green">
+                                        {formatIDR(docType === 'invoice_final' ? remainingAmount : grandTotal)}
+                                    </span>
+                                )}
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {/* Footer */}
-                    <footer className="mt-20 py-20 bg-black/20 text-center border-t border-white/5 pb-32 lg:pb-20">
-                        <div className="max-w-md mx-auto px-6">
-                            <h2 className="text-xl font-bold tracking-tighter mb-8 text-meramu-green">MERAMU<span className="text-white">.</span></h2>
-                            <div className="flex justify-center gap-8 mb-12">
-                                <SocialLink icon="wa" href="https://wa.me/6285161230219" label="WhatsApp" />
-                                <SocialLink icon="ig" href="https://instagram.com/meramu.studio" label="Instagram" />
-                                <SocialLink icon="port" href="https://drive.google.com/file/d/17_VrbF6PeIz0dMwbBUtANmF1GFINzGdJ/view?usp=sharing" label="Portfolio" />
+                        {/* Info DP (Hanya untuk Quotation biasa) */}
+                        {docType === 'quotation' && (
+                            <div className="bg-[#F9FBF7] rounded-lg p-3 mt-4 border border-[#E6E8E0] print:border-none print:p-0 print:bg-transparent">
+                                <div className="flex justify-between items-center mb-2 pb-2 border-b border-dashed border-[#A9B388]">
+                                    <span className="font-semibold text-[#4A5D4F]">Down Payment</span>
+                                    <div className="flex items-center justify-end text-[#4A5D4F]">
+                                        <span className="font-bold mr-1 print:hidden">Rp</span>
+                                        <input 
+                                            type="number" 
+                                            min="0"
+                                            value={isDpManual ? manualDp : dpAmount}
+                                            onChange={(e) => { setIsDpManual(true); setManualDp(parseInt(e.target.value) || 0); }}
+                                            className="w-28 text-right bg-transparent focus:outline-none font-bold border-b border-[#4A5D4F]/30 print:hidden"
+                                        />
+                                        <span className="hidden print:inline font-bold">{formatIDR(dpAmount)}</span>
+                                    </div>
+                                </div>
+                                <div className="flex justify-between items-center pt-1">
+                                    <span className="text-sm font-medium text-[#6B786D]">Sisa Pelunasan</span>
+                                    <span className="text-sm font-medium text-[#6B786D]">{formatIDR(remainingAmount)}</span>
+                                </div>
                             </div>
-                            <p className="text-[9px] uppercase tracking-[0.5em] font-light opacity-30">© 2026 MERAMU STUDIO • JAKARTA</p>
+                        )}
+                        
                         </div>
-                    </footer>
+                    </div>
+
+                    {/* Footer & Tanda Tangan */}
+                    <div className="mt-20 grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div>
+                        <h4 className="font-bold text-meramu-green mb-3 text-sm uppercase tracking-wider">Catatan:</h4>
+                        <textarea 
+                            value={quotationData.notes}
+                            onChange={(e) => setQuotationData({...quotationData, notes: e.target.value})}
+                            className="w-full text-sm text-[#6B786D] h-32 bg-[#F9FBF7] p-4 rounded-lg border border-transparent hover:border-[#D1D8C6] focus:outline-none focus:border-[#A9B388] resize-none print:bg-transparent print:p-0 leading-relaxed"
+                        />
+                        
+                        <div className="mt-6 text-xs text-[#8C9885]">
+                            <p>Transfer Pembayaran ke:</p>
+                            <p className="font-medium text-[#6B786D] text-sm mt-1">BCA 5271779586 a.n Andreana Dewi</p>
+                        </div>
+                        </div>
+                        
+                        <div className="text-center md:text-right flex flex-col items-center md:items-end justify-end">
+                        <p className="text-sm text-[#6B786D] mb-20">Hormat Kami,</p>
+                        <div className="border-t-2 border-meramu-green w-48"></div>
+                        <input 
+                            type="text"
+                            value={quotationData.senderName}
+                            onChange={(e) => setQuotationData({...quotationData, senderName: e.target.value})}
+                            className="text-center md:text-right mt-3 font-bold text-lg text-meramu-dark focus:outline-none bg-transparent w-full"
+                        />
+                        <p className="text-xs text-[#8C9885] mt-1">Freelance Graphic Designer</p>
+                        </div>
+                    </div>
+                    </div>
+                    
+                    {/* Footer Bar */}
+                    <div className="bg-[#FAF9F6] p-4 text-center text-xs text-[#A9B388] no-print border-t border-[#EFECE5]">
+                    Dokumen ini dibuat dengan Meramu Design Tools.
+                    </div>
+                </div>
                 </div>
             );
         };
-
-        const PackageCard = ({ pkg, cart, togglePackage, lang, formatCurrency }) => {
-            const cardRef = useRef(null);
-            
-            // Check if item is in cart
-            const isSelected = cart.some(item => item.id === pkg.id);
-
-            const handleMouseMove = (e) => {
-                if (!cardRef.current) return;
-                const card = cardRef.current;
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                const rotateY = ((x - rect.width / 2) / rect.width) * 10;
-                const rotateX = -((y - rect.height / 2) / rect.height) * 10;
-
-                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-            };
-
-            const handleMouseLeave = () => {
-                if (cardRef.current) {
-                    if (isSelected) {
-                         cardRef.current.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1.02, 1.02, 1.02)';
-                    } else {
-                         cardRef.current.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
-                    }
-                }
-            };
-
-            useEffect(() => {
-                 if (cardRef.current) {
-                    if (isSelected) {
-                         cardRef.current.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1.02, 1.02, 1.02)';
-                    } else {
-                         cardRef.current.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
-                    }
-                 }
-            }, [isSelected]);
-
-            return (
-                <div 
-                    ref={cardRef}
-                    onMouseMove={handleMouseMove}
-                    onMouseLeave={handleMouseLeave}
-                    onClick={() => togglePackage(pkg)}
-                    className={`p-8 rounded-3xl cursor-pointer card-3d border group relative overflow-hidden ${isSelected ? 'bg-meramu-cream text-meramu-dark border-transparent shadow-[0_0_30px_rgba(254,245,218,0.2)]' : 'glass-card hover:bg-white/5 border-transparent'}`}
-                >
-                    {/* Selection Indicator */}
-                    {isSelected && (
-                        <div className="absolute top-4 right-4 text-meramu-green bg-meramu-dark/10 p-1 rounded-full">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
-                        </div>
-                    )}
-
-                    <div className="flex justify-between items-start mb-6 pr-8">
-                        <h3 className="text-xs uppercase tracking-widest font-semibold">{pkg.name}</h3>
-                        {pkg.tag && <span className={`text-[8px] px-2 py-0.5 rounded-full uppercase ${isSelected ? 'bg-meramu-green text-white' : 'bg-white/10 text-white/60'}`}>{pkg.tag}</span>}
-                    </div>
-                    <div className="text-2xl font-light mb-8">
-                        {formatCurrency(pkg.price[lang])}
-                        {pkg.isPerUnit && <span className="text-[10px] opacity-40 ml-1">/{pkg.unitName[lang]}</span>}
-                    </div>
-                    <ul className="space-y-3">
-                        {pkg.features[lang].map((f, i) => (
-                            <li key={i} className="text-[11px] font-light flex items-start gap-3 opacity-60 italic leading-relaxed group-hover:opacity-100 transition-opacity">
-                                <span className={isSelected ? 'text-meramu-green' : 'text-meramu-green/70'}>•</span> {f}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            );
-        };
-
-        const SocialLink = ({ icon, href, label }) => (
-            <a href={href} target="_blank" className="flex flex-col items-center gap-2 group">
-                <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-meramu-green group-hover:border-transparent transition-all">
-                    {icon === 'wa' && <svg className="w-4 h-4 text-white/50 group-hover:text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.506-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.015-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>}
-                    {icon === 'ig' && <svg className="w-4 h-4 text-white/50 group-hover:text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.266.069 1.645.069 4.849s-.011 3.584-.069 4.849c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.011-4.849-.07c-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849s.012-3.584.07-4.849c.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.337 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.339-.2 6.78-2.618 6.98-6.98.058-1.28.073-1.689.073-4.947s-.015-3.667-.072-4.947c-.2-4.349-2.619-6.78-6.98-6.98-1.28-.059-1.689-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>}
-                    {icon === 'port' && <svg className="w-4 h-4 text-white/50 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>}
-                </div>
-                <span className="text-[9px] uppercase tracking-widest opacity-40 group-hover:opacity-100 transition-opacity">{label}</span>
-            </a>
-        );
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<RateCardApp />);
+        root.render(<QuotationApp />);
     </script>
 </body>
 </html>
