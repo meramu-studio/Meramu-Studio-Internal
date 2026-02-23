@@ -168,6 +168,8 @@
 
             const [discountPercent, setDiscountPercent] = React.useState(5);
             const [taxPercent, setTaxPercent] = React.useState(0);
+            const [isDpManual, setIsDpManual] = React.useState(false);
+            const [manualDp, setManualDp] = React.useState(0);
 
             // Load data dari LocalStorage
             React.useEffect(() => {
@@ -271,7 +273,7 @@
             const taxableAmount = subtotal - discountAmount;
             const taxAmount = (taxableAmount * taxPercent) / 100;
             const grandTotal = taxableAmount + taxAmount;
-            const dpAmount = grandTotal * 0.5;
+            const dpAmount = isDpManual ? manualDp : grandTotal * 0.5;
             const remainingAmount = grandTotal - dpAmount;
 
             const getDocTitle = (type) => {
@@ -334,6 +336,8 @@
                     items,
                     discountPercent,
                     taxPercent,
+                    isDpManual,
+                    manualDp,
                     grandTotal
                 };
                 
@@ -364,6 +368,8 @@
                     setItems(entry.items);
                     setDiscountPercent(entry.discountPercent);
                     setTaxPercent(entry.taxPercent);
+                    setIsDpManual(entry.isDpManual || false);
+                    setManualDp(entry.manualDp || 0);
                     setShowHistory(false);
                 }
             };
@@ -389,7 +395,7 @@
                 } else if (type === 'invoice') {
                     template = `Halo [Nama Klien],\n\nSemoga hari Anda menyenangkan.\n\nBerikut saya lampirkan Invoice untuk termin [DP/Pelunasan] project [Nama Project].\n\nMohon dapat diproses pembayarannya ke rekening yang tertera di invoice agar pengerjaan/pengiriman file final dapat segera dilakukan.\n\nTerima kasih banyak atas kerjasamanya.\n\nSalam,\n${quotationData.senderName}`;
                 } else if (type === 'dp') {
-                    template = `Halo [Nama Klien],\n\nTerima kasih sudah mempercayakan project ini kepada saya.\n\nSesuai kesepakatan, saya akan mulai mengerjakan tahap awal setelah Down Payment (DP) sebesar 50% diterima. Berikut saya lampirkan Invoice DP-nya.\n\nSegera kabari jika transfer sudah dilakukan ya, supaya bisa langsung saya jadwalkan pengerjaannya.\n\nTerima kasih!\n\nSalam,\n${quotationData.senderName}`;
+                    template = `Halo [Nama Klien],\n\nTerima kasih sudah mempercayakan project ini kepada saya.\n\nSesuai kesepakatan, saya akan mulai mengerjakan tahap awal setelah Down Payment (DP) sebesar ${formatIDR(dpAmount)} diterima. Berikut saya lampirkan Invoice DP-nya.\n\nSegera kabari jika transfer sudah dilakukan ya, supaya bisa langsung saya jadwalkan pengerjaannya.\n\nTerima kasih!\n\nSalam,\n${quotationData.senderName}`;
                 } else if (type === 'pricelist') {
                     template = `Halo [Nama Klien],\n\nThanks for reaching out! Senang sekali bisa terhubung dengan Anda.\n\nMenjawab inquiry Anda, berikut saya lampirkan Quotation/Pricelist untuk kebutuhan project tersebut. Silakan dipelajari terlebih dahulu detail scope dan harganya.\n\nJangan ragu untuk diskusi ya, karena harga yang tertera masih bisa kita sesuaikan (negotiable) bergantung pada kebutuhan spesifik atau budget yang Anda miliki.\n\nDitunggu kabar baiknya!\n\nSalam,\n${quotationData.senderName}`;
                 }
@@ -841,7 +847,17 @@
                         {docType === 'invoice_final' && (
                             <div className="flex justify-between items-center text-[#B91C1C] bg-red-50 p-2 rounded -mx-2 border border-red-100">
                                 <span className="font-medium">Dikurangi DP (Sudah Dibayar)</span>
-                                <span className="font-bold">- {formatIDR(dpAmount)}</span>
+                                <div className="flex items-center justify-end">
+                                    <span className="font-bold mr-1 print:hidden">- Rp</span>
+                                    <input 
+                                        type="number" 
+                                        min="0"
+                                        value={isDpManual ? manualDp : dpAmount}
+                                        onChange={(e) => { setIsDpManual(true); setManualDp(parseInt(e.target.value) || 0); }}
+                                        className="w-28 text-right bg-transparent focus:outline-none font-bold border-b border-[#B91C1C]/30 print:hidden"
+                                    />
+                                    <span className="hidden print:inline font-bold">- {formatIDR(dpAmount)}</span>
+                                </div>
                             </div>
                         )}
 
@@ -851,13 +867,24 @@
                                 <span className="text-xl md:text-2xl font-bold text-meramu-dark">
                                     {docType === 'invoice_dp' ? 'Total Tagihan DP' : docType === 'invoice_final' ? 'Sisa Tagihan' : 'Total Tagihan'}
                                 </span>
-                                <span className="text-xl md:text-2xl font-bold text-meramu-green">
-                                    {formatIDR(
-                                        docType === 'invoice_dp' ? dpAmount : 
-                                        docType === 'invoice_final' ? remainingAmount : 
-                                        grandTotal // for invoice_full
-                                    )}
-                                </span>
+                                
+                                {docType === 'invoice_dp' ? (
+                                    <div className="flex items-center justify-end text-meramu-green">
+                                        <span className="text-xl md:text-2xl font-bold mr-2 print:hidden">Rp</span>
+                                        <input 
+                                            type="number" 
+                                            min="0"
+                                            value={isDpManual ? manualDp : dpAmount}
+                                            onChange={(e) => { setIsDpManual(true); setManualDp(parseInt(e.target.value) || 0); }}
+                                            className="w-32 md:w-40 text-right bg-transparent focus:outline-none text-xl md:text-2xl font-bold border-b-2 border-meramu-green/30 print:hidden"
+                                        />
+                                        <span className="hidden print:inline text-xl md:text-2xl font-bold">{formatIDR(dpAmount)}</span>
+                                    </div>
+                                ) : (
+                                    <span className="text-xl md:text-2xl font-bold text-meramu-green">
+                                        {formatIDR(docType === 'invoice_final' ? remainingAmount : grandTotal)}
+                                    </span>
+                                )}
                             </div>
                         )}
 
@@ -865,12 +892,22 @@
                         {docType === 'quotation' && (
                             <div className="bg-[#F9FBF7] rounded-lg p-3 mt-4 border border-[#E6E8E0] print:border-none print:p-0 print:bg-transparent">
                                 <div className="flex justify-between items-center mb-2 pb-2 border-b border-dashed border-[#A9B388]">
-                                <span className="font-semibold text-[#4A5D4F]">Down Payment (50%)</span>
-                                <span className="font-bold text-[#4A5D4F]">{formatIDR(dpAmount)}</span>
+                                    <span className="font-semibold text-[#4A5D4F]">Down Payment</span>
+                                    <div className="flex items-center justify-end text-[#4A5D4F]">
+                                        <span className="font-bold mr-1 print:hidden">Rp</span>
+                                        <input 
+                                            type="number" 
+                                            min="0"
+                                            value={isDpManual ? manualDp : dpAmount}
+                                            onChange={(e) => { setIsDpManual(true); setManualDp(parseInt(e.target.value) || 0); }}
+                                            className="w-28 text-right bg-transparent focus:outline-none font-bold border-b border-[#4A5D4F]/30 print:hidden"
+                                        />
+                                        <span className="hidden print:inline font-bold">{formatIDR(dpAmount)}</span>
+                                    </div>
                                 </div>
                                 <div className="flex justify-between items-center pt-1">
-                                <span className="text-sm font-medium text-[#6B786D]">Sisa Pelunasan</span>
-                                <span className="text-sm font-medium text-[#6B786D]">{formatIDR(remainingAmount)}</span>
+                                    <span className="text-sm font-medium text-[#6B786D]">Sisa Pelunasan</span>
+                                    <span className="text-sm font-medium text-[#6B786D]">{formatIDR(remainingAmount)}</span>
                                 </div>
                             </div>
                         )}
